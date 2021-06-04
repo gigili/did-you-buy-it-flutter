@@ -41,10 +41,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     padding: paddingMedium,
                     child: TextFormField(
                       decoration: defaultInputDecoration("Email", "Email"),
+                      autofillHints: [AutofillHints.email],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Email can't be empty";
                         }
+
                         return null;
                       },
                     ),

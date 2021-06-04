@@ -1,3 +1,5 @@
+import 'package:did_you_buy_it/utils/helpers.dart';
+import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/widgets/rounded_button_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -66,6 +68,11 @@ class _LoginFormState extends State<LoginForm> {
                       if (_formKey.currentState!.validate()) {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(SnackBar(content: Text('Processing Data')));
+
+                        networkLogin(
+                          "gac",
+                          hashStr("Test1234")
+                        );
                       }
                     },
                   ),
