@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.igorilic.did_you_buy_it">
    <application
-        android:label="did_you_buy_it"
+        android:label="DYBI?"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
