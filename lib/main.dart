@@ -8,7 +8,7 @@ void main() => runApp(
         title: "Did You Buy It?",
         home: DefaultTabController(
           length: 2,
-          initialIndex: 1,
+          initialIndex: 0,
           child: Scaffold(
             appBar: AppBar(
               title: const Text("Did You Buy It?"),

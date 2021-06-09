@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:did_you_buy_it/utils/helpers.dart';
+import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/widgets/rounded_button_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +15,10 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  String name = "";
+  String email = "";
+  String username = "";
+  String password = "";
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +41,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
+                      onChanged: (value){
+                        setState(() {
+                          name = value;
+                        });
+                      },
                     ),
                   ),
                 ),
@@ -49,6 +62,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         return null;
                       },
+                      onChanged: (value){
+                        setState(() {
+                          email = value;
+                        });
+                      },
                     ),
                   ),
                 ),
@@ -63,6 +81,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           return "Username can't be empty";
                         }
                         return null;
+                      },
+                      onChanged: (value){
+                        setState(() {
+                          username = value;
+                        });
                       },
                     ),
                   ),
@@ -80,6 +103,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
+                      onChanged: (value){
+                        setState(() {
+                          password = value;
+                        });
+                      },
                     ),
                   ),
                 ),
@@ -92,8 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     label: "SIGN UP",
                     onPress: () {
                       if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Processing Data')));
+                        register();
                       }
                     },
                   ),
@@ -104,5 +131,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  void register(){
+    callAPI("/register", params: {
+      "name": name,
+      "email": email,
+      "username": username,
+      "password": hashStr(password)
+    }, callback: (String data) {
+      var result = jsonDecode(data);
+      if(result["success"]){
+        showMsgDialog(context, title: "Registration successful", message: result["message"]);
+      }else{
+        showMsgDialog(context, title: "Registration failed", message: "Unable to register an account");
+      }
+    }, errorCallback: (int statusCode, String data){
+      var result = jsonDecode(data);
+      showMsgDialog(context, title: "Registration failed", message: result["error"]["message"]);
+    });
   }
 }

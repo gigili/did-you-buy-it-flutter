@@ -1,14 +1,16 @@
 import 'package:http/http.dart' as http;
 
-const String BASE_URL = "http://10.9.9.66:8098";
+import '../constants.dart';
 
-void networkLogin(String username, String password) async{
-  var url = Uri.parse('$BASE_URL/login');
-  var response = await http.post(url, body: {
-    'username': username,
-    'password': password
-  });
-  
-  print('Response status: ${response.statusCode}');
-  print('Response body: ${response.body}');
+void callAPI(String url, {Object? params, Map<String, String>? headers,
+    Function(String data)? callback, Function(int statusCode, String data)? errorCallback}) async {
+  var _url = Uri.parse('$BASE_URL$url');
+
+  var response = await http.post(_url, body: params, headers: headers);
+print(params);
+  if (response.statusCode < 200 || response.statusCode > 399) {
+    if (errorCallback != null) errorCallback(response.statusCode, response.body);
+  } else {
+    if (callback != null) callback(response.body);
+  }
 }
