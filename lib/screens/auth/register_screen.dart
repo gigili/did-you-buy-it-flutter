@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
+import 'package:did_you_buy_it/utils/types.dart';
 import 'package:did_you_buy_it/widgets/rounded_button_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 Container(
                   child: Padding(
-                    padding: paddingMedium,
+                    padding: paddingMediumAll,
                     child: TextFormField(
                       decoration: defaultInputDecoration("Name", "Name"),
                       validator: (value) {
@@ -41,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
-                      onChanged: (value){
+                      onChanged: (value) {
                         setState(() {
                           name = value;
                         });
@@ -51,7 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 Container(
                   child: Padding(
-                    padding: paddingMedium,
+                    padding: paddingMediumAll,
                     child: TextFormField(
                       decoration: defaultInputDecoration("Email", "Email"),
                       autofillHints: [AutofillHints.email],
@@ -60,9 +61,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           return "Email can't be empty";
                         }
 
+                        if (!value.contains("@") ||
+                            !emailRegex.hasMatch(value)) {
+                          return "Invalid e-mail address";
+                        }
+
                         return null;
                       },
-                      onChanged: (value){
+                      onChanged: (value) {
                         setState(() {
                           email = value;
                         });
@@ -72,7 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 Container(
                   child: Padding(
-                    padding: paddingMedium,
+                    padding: paddingMediumAll,
                     child: TextFormField(
                       decoration:
                           defaultInputDecoration("Username", "Username"),
@@ -82,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
-                      onChanged: (value){
+                      onChanged: (value) {
                         setState(() {
                           username = value;
                         });
@@ -92,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 Container(
                   child: Padding(
-                    padding: paddingMedium,
+                    padding: paddingMediumAll,
                     child: TextFormField(
                       obscureText: true,
                       decoration:
@@ -103,7 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
-                      onChanged: (value){
+                      onChanged: (value) {
                         setState(() {
                           password = value;
                         });
@@ -133,7 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void register(){
+  void register() {
     callAPI("/register", params: {
       "name": name,
       "email": email,
@@ -141,14 +147,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "password": hashStr(password)
     }, callback: (String data) {
       var result = jsonDecode(data);
-      if(result["success"]){
-        showMsgDialog(context, title: "Registration successful", message: result["message"]);
-      }else{
-        showMsgDialog(context, title: "Registration failed", message: "Unable to register an account");
+      if (result["success"]) {
+        showMsgDialog(context,
+            title: "Registration successful", message: result["message"]);
+      } else {
+        showMsgDialog(context,
+            title: "Registration failed",
+            message: "Unable to register an account");
       }
-    }, errorCallback: (int statusCode, String data){
+    }, errorCallback: (int statusCode, String data) {
       var result = jsonDecode(data);
-      showMsgDialog(context, title: "Registration failed", message: result["error"]["message"]);
-    });
+      showMsgDialog(context,
+          title: "Registration failed", message: result["error"]["message"]);
+    }, requestMethod: RequestMethod.POST);
   }
 }
