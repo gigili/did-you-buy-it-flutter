@@ -1,4 +1,4 @@
-import 'package:did_you_buy_it/ui/form/auth/register_form.dart';
+import 'package:did_you_buy_it/ui/forms/auth/register_form.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

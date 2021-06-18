@@ -48,36 +48,29 @@ class _LoginFormState extends State<LoginForm> {
                             }
                             return null;
                           },
-                          onChanged: (value) {
-                            setState(() {
-                              username = value;
-                            });
-                          },
+                          onSaved: (value) => username = value,
                         ),
                       ),
                       Padding(
                         padding: paddingMediumAll,
                         child: TextFormField(
-                            obscureText: true,
-                            decoration:
-                                defaultInputDecoration("Password", "Password"),
-                            autofocus: false,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Password can't be empty";
-                              }
+                          obscureText: true,
+                          decoration:
+                              defaultInputDecoration("Password", "Password"),
+                          autofocus: false,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Password can't be empty";
+                            }
 
-                              if (value.length < 8) {
-                                return "Password needs to be at least 8 characters";
-                              }
+                            if (value.length < 8) {
+                              return "Password needs to be at least 8 characters";
+                            }
 
-                              return null;
-                            },
-                            onChanged: (value) {
-                              setState(() {
-                                password = value;
-                              });
-                            }),
+                            return null;
+                          },
+                          onSaved: (value) => password = value,
+                        ),
                       ),
                       Padding(
                         padding: paddingMediumAll,
