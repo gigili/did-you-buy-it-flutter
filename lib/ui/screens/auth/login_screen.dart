@@ -1,4 +1,4 @@
-import 'package:did_you_buy_it/ui/form/auth/login_form.dart';
+import 'package:did_you_buy_it/ui/forms/auth/login_form.dart';
 import 'package:did_you_buy_it/ui/screens/auth/password_reset.dart';
 import 'package:flutter/material.dart';
 

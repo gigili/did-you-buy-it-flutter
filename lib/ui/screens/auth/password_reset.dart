@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/ui/form/auth/password_reset_form.dart';
+import 'package:did_you_buy_it/ui/forms/auth/password_reset_form.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
