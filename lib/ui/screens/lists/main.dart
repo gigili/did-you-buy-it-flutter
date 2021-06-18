@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ListsScreen extends StatefulWidget {
+  static String routeName = "/lists";
   ListsScreen({Key? key}) : super(key: key);
 
   @override

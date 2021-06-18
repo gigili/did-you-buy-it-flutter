@@ -1,14 +1,13 @@
 import 'dart:convert';
 
-import 'package:did_you_buy_it/screens/lists/main.dart';
+import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/ui/screens/lists/main.dart';
+import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/utils/types.dart';
-import 'package:did_you_buy_it/widgets/rounded_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../constants.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -105,30 +104,29 @@ class _LoginFormState extends State<LoginForm> {
       loginInProgress = true;
     });
 
-    callAPI("/login",
-        params: {"username": username, "password": hashStr(password!)},
-        callback: (String data) async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      var result = jsonDecode(data);
-      await prefs.setString(ACCESS_TOKEN_KEY, result["data"]["access_token"]);
-      await prefs.setString(REFRESH_TOKEN_KEY, result["data"]["refresh_token"]);
-      await prefs.setInt("lastLogin", DateTime.now().millisecondsSinceEpoch);
-      // showMsgDialog(context,
-      //     title: "Login success", message: "//TODO: Implement something here");
+    callAPI(
+      "/login",
+      params: {"username": username, "password": hashStr(password!)},
+      callback: (String data) async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var result = jsonDecode(data);
+        var res = result["data"];
+        await prefs.setString(ACCESS_TOKEN_KEY, res["access_token"]);
+        await prefs.setString(REFRESH_TOKEN_KEY, res["refresh_token"]);
+        await prefs.setInt("lastLogin", DateTime.now().millisecondsSinceEpoch);
 
-      Navigator.of(context).pop();
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (BuildContext context) => ListsScreen(),
-        ),
-      );
-    }, errorCallback: (int statusCode, String data) {
-      var result = jsonDecode(data);
-      showMsgDialog(context,
-          title: "Login failed",
-          message: result["error"]["message"],
-          closeButtonText: "OK");
-    }, requestMethod: RequestMethod.POST);
+        Navigator.of(context).pop();
+        Navigator.pushNamed(context, ListsScreen.routeName);
+      },
+      errorCallback: (int statusCode, String data) {
+        var result = jsonDecode(data);
+        showMsgDialog(context,
+            title: "Login failed",
+            message: result["error"]["message"],
+            closeButtonText: "OK");
+      },
+      requestMethod: RequestMethod.POST,
+    );
 
     setState(() {
       loginInProgress = false;

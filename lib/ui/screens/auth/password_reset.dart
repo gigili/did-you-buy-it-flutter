@@ -1,15 +1,14 @@
 import 'dart:convert';
-
-import 'package:did_you_buy_it/screens/auth/password_reset_form.dart';
+import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/ui/form/auth/password_reset_form.dart';
+import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/utils/types.dart';
-import 'package:did_you_buy_it/widgets/rounded_button_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../../constants.dart';
-
 class ResetPassword extends StatefulWidget {
+  static String routeName = "/reset-password";
   @override
   _ResetPasswordState createState() => _ResetPasswordState();
 }
