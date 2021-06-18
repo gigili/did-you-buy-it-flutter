@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/forms/auth/password_reset_form.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
@@ -38,16 +39,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                     children: [
                       showPasswordResetForm
                           ? PasswordResetForm(
-                              onCodeChanged: (value) {
-                                setState(() {
-                                  passwordResetCode = value;
-                                });
-                              },
-                              onPasswordChange: (value) {
-                                setState(() {
-                                  newPassword = value;
-                                });
-                              },
+                              onCodeChanged: (value)  => passwordResetCode = value,
+                              onPasswordChange: (value) => newPassword = value,
                             )
                           : TextFormField(
                               decoration: defaultInputDecoration(
@@ -68,11 +61,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                                 }
                                 return null;
                               },
-                              onChanged: (value) {
-                                setState(() {
-                                  emailOrUsername = value;
-                                });
-                              },
+                              onChanged: (value) => emailOrUsername = value,
                             ),
                       SizedBox(height: 20),
                       RoundedButtonWidget(

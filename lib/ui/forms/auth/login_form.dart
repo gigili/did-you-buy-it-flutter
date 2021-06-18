@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/ui/screens/lists/main.dart';
+import 'package:did_you_buy_it/ui/screens/lists/lists.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
@@ -49,6 +49,7 @@ class _LoginFormState extends State<LoginForm> {
                             return null;
                           },
                           onSaved: (value) => username = value,
+                          onChanged: (value) => username = value,
                         ),
                       ),
                       Padding(
@@ -70,6 +71,7 @@ class _LoginFormState extends State<LoginForm> {
                             return null;
                           },
                           onSaved: (value) => password = value,
+                          onChanged: (value) => password = value,
                         ),
                       ),
                       Padding(
@@ -112,6 +114,7 @@ class _LoginFormState extends State<LoginForm> {
         Navigator.pushNamed(context, ListsScreen.routeName);
       },
       errorCallback: (int statusCode, String data) {
+        print(data);
         var result = jsonDecode(data);
         showMsgDialog(context,
             title: "Login failed",

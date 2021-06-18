@@ -38,6 +38,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     return null;
                   },
                   onSaved: (newValue) => name = newValue,
+                  onChanged: (newValue) => name = newValue,
                 ),
               ),
             ),
@@ -59,6 +60,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     return null;
                   },
                   onSaved: (newValue) => email = newValue,
+                  onChanged: (newValue) => email = newValue,
                 ),
               ),
             ),
@@ -74,6 +76,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     return null;
                   },
                   onSaved: (newValue) => username = newValue,
+                  onChanged: (newValue) => username = newValue,
                 ),
               ),
             ),
@@ -90,6 +93,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     return null;
                   },
                   onSaved: (newValue) => password = newValue,
+                  onChanged: (newValue) => password = newValue,
                 ),
               ),
             ),
