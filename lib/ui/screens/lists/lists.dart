@@ -76,16 +76,14 @@ class _ListsScreenState extends State<ListsScreen> {
   }
 
   void loadLists() async {
-    prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString(ACCESS_TOKEN_KEY)!;
     if (loadMore) {
+      prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString(ACCESS_TOKEN_KEY)!;
       callAPI("/list?limit=10&page=$listsPage", callback: (String data) {
         var res = jsonDecode(data);
 
         if (res["data"].length == 0) {
-          setState(() {
-            loadMore = false;
-          });
+          loadMore = false;
           return;
         }
 

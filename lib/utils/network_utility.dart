@@ -10,32 +10,43 @@ void callAPI(
   Function(String data)? callback,
   Function(int statusCode, String data)? errorCallback,
   RequestMethod requestMethod = RequestMethod.GET,
-}) async {
+}) {
   Uri _url = Uri.parse('$BASE_URL$url');
-  http.Response response;
 
   switch (requestMethod) {
     case RequestMethod.POST:
-      response = await http.post(_url, body: params, headers: headers);
+      http.post(_url, body: params, headers: headers).then((value) {
+        handleNetworkResponse(value, callback, errorCallback);
+      });
       break;
 
     case RequestMethod.PUT:
-      response = await http.put(_url, body: params, headers: headers);
+      http.put(_url, body: params, headers: headers).then((value) {
+        handleNetworkResponse(value, callback, errorCallback);
+      });
       break;
 
     case RequestMethod.PATCH:
-      response = await http.patch(_url, body: params, headers: headers);
+      http.patch(_url, body: params, headers: headers).then((value) {
+        handleNetworkResponse(value, callback, errorCallback);
+      });
       break;
 
     case RequestMethod.DELETE:
-      response = await http.delete(_url, body: params, headers: headers);
+      http.delete(_url, body: params, headers: headers).then((value) {
+        handleNetworkResponse(value, callback, errorCallback);
+      });
       break;
 
     default:
-      response = await http.get(_url, headers: headers);
+      http.get(_url, headers: headers).then((value) {
+        handleNetworkResponse(value, callback, errorCallback);
+      });
       break;
   }
+}
 
+void handleNetworkResponse(http.Response response, Function? callback, Function? errorCallback) {
   if (response.request != null) {
     if (response.statusCode < 200 || response.statusCode > 399) {
       if (errorCallback != null) {

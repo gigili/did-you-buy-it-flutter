@@ -29,7 +29,13 @@ class ListsViewTile extends StatelessWidget {
                   fontSize: 20,
                 ),
               ),
-              Icon(Icons.settings)
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.white70,
+                ),
+              ),
             ],
           ),
           SizedBox(height: 20),
