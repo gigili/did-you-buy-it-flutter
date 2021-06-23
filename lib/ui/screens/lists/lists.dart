@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/screens/lists/lists_view_tile.dart';
+import 'package:did_you_buy_it/ui/screens/lists_items/list_items.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/models/list_model.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
@@ -59,8 +60,7 @@ class _ListsScreenState extends State<ListsScreen> {
           return ListTile(
             title: ListsViewTile(item: lists[index]),
             onTap: () {
-              showMsgDialog(context,
-                  title: "Work in progress", message: "NOT IMPLEMENTED YET");
+              Navigator.pushNamed(context, ListItems.routeName, arguments: lists[index]);
             },
           );
         },
@@ -68,7 +68,7 @@ class _ListsScreenState extends State<ListsScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showMsgDialog(context,
-              title: "Work in progress", message: "NOT IMPLEMENTED YET");
+              title: "FAB click", message: "NOT IMPLEMENTED YET");
         },
         child: Icon(Icons.add),
       ),
