@@ -26,4 +26,11 @@ class UserModel {
       username: res["username"],
     );
   }
+
+  @override
+  String toString() {
+    return name;
+  }
+
+
 }

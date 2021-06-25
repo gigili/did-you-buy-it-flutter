@@ -7,7 +7,7 @@ class ListItemModel {
   String? purchasedUserID;
   String name;
   String? image;
-  bool isRepeating = false;
+  bool isRepeating;
   String? purchasedAt;
 
   ListItemModel({
@@ -18,10 +18,12 @@ class ListItemModel {
     required this.name,
     this.image,
     this.purchasedAt,
+    this.isRepeating = false
   });
 
   static ListItemModel fromJSON(String data) {
     var res = jsonDecode(data);
+
     return ListItemModel(
       id: res["id"],
       listID: res["listid"],
@@ -29,7 +31,24 @@ class ListItemModel {
       name: res["name"],
       purchasedUserID: res["purchaseduserid"],
       image: res["image"],
-      purchasedAt: res["purchased_at"]
+      purchasedAt: res["purchased_at"],
+      isRepeating: res["is_repeating"]
     );
+  }
+
+  @override
+  String toString() {
+    return name;
+  }
+
+  String toStringDebug(){
+    var output = "Item info: [$id | $name]\n";
+    output += "Item User: $userID\n";
+    output += "Item List: $listID\n";
+    output += "Item Image: $image\n";
+    output += "Item repeating: $isRepeating\n";
+    output += "Item purchased by: $purchasedUserID @ $purchasedAt\n";
+
+    return output;
   }
 }

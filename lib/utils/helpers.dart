@@ -2,17 +2,17 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 String hashStr(String str) {
   var bytes = utf8.encode(str); // data being hashed
   return sha256.convert(bytes).toString();
 }
 
-void showMsgDialog(BuildContext context, {
-  String title = "Error",
-  String message = "There was an error",
-  String closeButtonText = "Close"
-}) {
+void showMsgDialog(BuildContext context,
+    {String title = "Error",
+    String message = "There was an error",
+    String closeButtonText = "Close"}) {
   // flutter defined function
   showDialog(
     context: context,
@@ -33,4 +33,11 @@ void showMsgDialog(BuildContext context, {
       );
     },
   );
+}
+
+String formatDate(String dateTime, {DateFormat? format}) {
+  if (format == null) {
+    format = DateFormat.yMd("en_US");
+  }
+  return format.format(DateTime.parse(dateTime));
 }
