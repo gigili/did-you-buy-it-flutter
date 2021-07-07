@@ -31,13 +31,11 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
             BoxShadow(
               blurRadius: 3,
               color: Colors.black,
-            )
+            ),
           ],
           borderRadius: BorderRadius.circular(20),
         ),
         child: Container(
-          /*padding: EdgeInsets.all(paddingMedium),
-          width: MediaQuery.of(context).size.width * 0.8,*/
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

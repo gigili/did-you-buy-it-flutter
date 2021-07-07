@@ -31,14 +31,14 @@ class ListModel {
     List<UserModel> users = [];
     List<ListItemModel> items = [];
 
-    if(res["users"] != null) {
+    if (res["users"] != null) {
       var usersJson = jsonDecode(res["users"]);
       for (var user in usersJson) {
         users.add(UserModel.fromJSON(user.toString()));
       }
     }
 
-    if(res["items"] != null) {
+    if (res["items"] != null) {
       var itemsJson = jsonDecode(res["items"]);
       for (var item in itemsJson) {
         items.add(ListItemModel.fromJSON(item.toString()));
@@ -46,15 +46,15 @@ class ListModel {
     }
 
     return ListModel(
-      id: res["id"],
-      userID: res["userid"],
-      name: res["name"],
-      createdAt: res["created_at"],
-      countItems: res["cntitems"],
-      countUsers: res["cntusers"],
-      cntBoughtItems: res["cntboughtitems"],
-      users: users,
-      items: items
-    );
+        id: res["id"],
+        userID: res["userid"],
+        name: res["name"],
+        createdAt: res["created_at"],
+        countItems: res["cntitems"] != null ? res["cntitems"] : 0,
+        countUsers: res["cntusers"] != null ? res["cntusers"] : 1,
+        cntBoughtItems:
+            res["cntboughtitems"] != null ? res["cntboughtitems"] : 0,
+        users: users,
+        items: items);
   }
 }
