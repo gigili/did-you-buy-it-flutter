@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class ListItemModel {
   String id;
   String listID;
