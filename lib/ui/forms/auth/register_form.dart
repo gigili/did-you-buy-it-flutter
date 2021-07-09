@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
+import 'package:did_you_buy_it/utils/api/auth_api.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/utils/types.dart';
@@ -14,10 +15,10 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
-  String? name = "";
-  String? email = "";
-  String? username = "";
-  String? password = "";
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,7 @@ class _RegisterFormState extends State<RegisterForm> {
               child: Padding(
                 padding: paddingMediumAll,
                 child: TextFormField(
+                  controller: nameController,
                   decoration: defaultInputDecoration("Name", "Name"),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -37,8 +39,6 @@ class _RegisterFormState extends State<RegisterForm> {
                     }
                     return null;
                   },
-                  onSaved: (newValue) => name = newValue,
-                  onChanged: (newValue) => name = newValue,
                 ),
               ),
             ),
@@ -46,6 +46,7 @@ class _RegisterFormState extends State<RegisterForm> {
               child: Padding(
                 padding: paddingMediumAll,
                 child: TextFormField(
+                  controller: emailController,
                   decoration: defaultInputDecoration("Email", "Email"),
                   autofillHints: [AutofillHints.email],
                   validator: (value) {
@@ -59,8 +60,6 @@ class _RegisterFormState extends State<RegisterForm> {
 
                     return null;
                   },
-                  onSaved: (newValue) => email = newValue,
-                  onChanged: (newValue) => email = newValue,
                 ),
               ),
             ),
@@ -68,6 +67,7 @@ class _RegisterFormState extends State<RegisterForm> {
               child: Padding(
                 padding: paddingMediumAll,
                 child: TextFormField(
+                  controller: usernameController,
                   decoration: defaultInputDecoration("Username", "Username"),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -75,8 +75,6 @@ class _RegisterFormState extends State<RegisterForm> {
                     }
                     return null;
                   },
-                  onSaved: (newValue) => username = newValue,
-                  onChanged: (newValue) => username = newValue,
                 ),
               ),
             ),
@@ -84,6 +82,7 @@ class _RegisterFormState extends State<RegisterForm> {
               child: Padding(
                 padding: paddingMediumAll,
                 child: TextFormField(
+                  controller: passwordController,
                   obscureText: true,
                   decoration: defaultInputDecoration("Password", "Password"),
                   validator: (value) {
@@ -92,8 +91,6 @@ class _RegisterFormState extends State<RegisterForm> {
                     }
                     return null;
                   },
-                  onSaved: (newValue) => password = newValue,
-                  onChanged: (newValue) => password = newValue,
                 ),
               ),
             ),
@@ -117,26 +114,55 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  void register() {
-    callAPI("/register", params: {
-      "name": name,
-      "email": email,
-      "username": username,
-      "password": hashStr(password!)
-    }, callback: (String data) {
-      var result = jsonDecode(data);
-      if (result["success"]) {
-        showMsgDialog(context,
-            title: "Registration successful", message: result["message"]);
-      } else {
-        showMsgDialog(context,
-            title: "Registration failed",
-            message: "Unable to register an account");
-      }
-    }, errorCallback: (int statusCode, String data) {
-      var result = jsonDecode(data);
-      showMsgDialog(context,
-          title: "Registration failed", message: result["error"]["message"]);
-    }, requestMethod: RequestMethod.POST);
+  void register() async {
+    RegisterResult result = await AuthApi.register(
+      name: nameController.text,
+      email: emailController.text,
+      username: usernameController.text,
+      password: passwordController.text,
+    );
+
+    switch (result) {
+      case RegisterResult.OK:
+        showMsgDialog(
+          context,
+          title: "Registration successfull",
+          message:
+              "Account registered successfully.\nPlease confirm your email.",
+        );
+        break;
+      case RegisterResult.FaildInputValidation:
+        showMsgDialog(
+          context,
+          title: "Registration failed",
+          message: "Missing required fields",
+          closeButtonText: "OK",
+        );
+        break;
+      case RegisterResult.RegistrationFailed:
+        showMsgDialog(
+          context,
+          title: "Registration failed",
+          message: "Registration failed",
+          closeButtonText: "OK",
+        );
+        break;
+      case RegisterResult.UsernameTaken:
+        showMsgDialog(
+          context,
+          title: "Registration failed",
+          message: "Username is already taken",
+          closeButtonText: "OK",
+        );
+        break;
+      case RegisterResult.EmailTaken:
+        showMsgDialog(
+          context,
+          title: "Registration failed",
+          message: "Email is already taken",
+          closeButtonText: "OK",
+        );
+        break;
+    }
   }
 }

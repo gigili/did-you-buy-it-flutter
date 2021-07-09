@@ -123,7 +123,7 @@ class _ListsScreenState extends State<ListsScreen> {
 
           List<ListModel> _ll = [];
           for (var row in res["data"]) {
-            _ll.add(ListModel.fromJSON(jsonEncode(row)));
+            _ll.add(ListModel.fromMap(row));
           }
 
           setState(() {
@@ -157,7 +157,7 @@ class _ListsScreenState extends State<ListsScreen> {
             message: "$listName was created successfully",
           );
 
-          ListModel list = ListModel.fromJSON(jsonEncode(result["data"]));
+          ListModel list = ListModel.fromMap(result["data"]);
           setState(() {
             lists.insert(0, list);
           });

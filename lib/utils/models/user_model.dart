@@ -17,13 +17,12 @@ class UserModel {
     this.status,
   });
 
-  static UserModel fromJSON(String data) {
-    var res = jsonDecode(data);
+  factory UserModel.fromMap(Map data) {
     return UserModel(
-      id: res["id"],
-      name: res["name"],
-      email: res["email"],
-      username: res["username"],
+      id: data["id"],
+      name: data["name"],
+      email: data["email"],
+      username: data["username"],
     );
   }
 
@@ -31,6 +30,4 @@ class UserModel {
   String toString() {
     return name;
   }
-
-
 }

@@ -1,13 +1,9 @@
-import 'dart:convert';
-
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/screens/lists/lists.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
+import 'package:did_you_buy_it/utils/api/auth_api.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
-import 'package:did_you_buy_it/utils/network_utility.dart';
-import 'package:did_you_buy_it/utils/types.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -17,8 +13,8 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   bool loginInProgress = false;
   final _formKey = GlobalKey<FormState>();
-  String? username = "";
-  String? password = "";
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +31,7 @@ class _LoginFormState extends State<LoginForm> {
                       Padding(
                         padding: paddingMediumAll,
                         child: TextFormField(
+                          controller: usernameController,
                           decoration:
                               defaultInputDecoration("Username", "Username"),
                           autofocus: true,
@@ -48,13 +45,12 @@ class _LoginFormState extends State<LoginForm> {
                             }
                             return null;
                           },
-                          onSaved: (value) => username = value,
-                          onChanged: (value) => username = value,
                         ),
                       ),
                       Padding(
                         padding: paddingMediumAll,
                         child: TextFormField(
+                          controller: passwordController,
                           obscureText: true,
                           decoration:
                               defaultInputDecoration("Password", "Password"),
@@ -70,8 +66,6 @@ class _LoginFormState extends State<LoginForm> {
 
                             return null;
                           },
-                          onSaved: (value) => password = value,
-                          onChanged: (value) => password = value,
                         ),
                       ),
                       Padding(
@@ -94,35 +88,46 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  void login() {
+  void login() async {
     setState(() {
       loginInProgress = true;
     });
 
-    callAPI(
-      "/login",
-      params: {"username": username, "password": hashStr(password!)},
-      callback: (String data) async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var result = jsonDecode(data);
-        var res = result["data"];
-        await prefs.setString(ACCESS_TOKEN_KEY, res["access_token"]);
-        await prefs.setString(REFRESH_TOKEN_KEY, res["refresh_token"]);
-        await prefs.setInt("lastLogin", DateTime.now().millisecondsSinceEpoch);
+    LoginResult? result = await AuthApi.login(
+      username: usernameController.text,
+      password: passwordController.text,
+    );
 
+    switch (result) {
+      case LoginResult.OK:
         Navigator.of(context).pop();
         Navigator.pushNamed(context, ListsScreen.routeName);
-      },
-      errorCallback: (int statusCode, String data) {
-        print(data);
-        var result = jsonDecode(data);
-        showMsgDialog(context,
-            title: "Login failed",
-            message: result["error"]["message"],
-            closeButtonText: "OK");
-      },
-      requestMethod: RequestMethod.POST,
-    );
+        break;
+      case LoginResult.InvalidCredentials:
+        showMsgDialog(
+          context,
+          title: "Login failed",
+          message: "Invalid credentials provided",
+          closeButtonText: "OK",
+        );
+        break;
+      case LoginResult.FaildInputValidation:
+        showMsgDialog(
+          context,
+          title: "Login failed",
+          message: "Missing required fields",
+          closeButtonText: "OK",
+        );
+        break;
+      case LoginResult.LoginFailed:
+        showMsgDialog(
+          context,
+          title: "Login failed",
+          message: "Login failed",
+          closeButtonText: "OK",
+        );
+        break;
+    }
 
     setState(() {
       loginInProgress = false;

@@ -87,7 +87,7 @@ class _ListItemTileState extends State<ListItemTile> {
     if (users.length == 0) {
       var usersJSON = jsonDecode(widget.strUsers!);
       for (var item in usersJSON) {
-        var user = UserModel.fromJSON(jsonEncode(item));
+        var user = UserModel.fromMap(item);
         users.add(user);
       }
     }

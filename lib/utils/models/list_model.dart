@@ -26,34 +26,33 @@ class ListModel {
     this.items,
   });
 
-  static ListModel fromJSON(String data) {
-    var res = jsonDecode(data);
+  factory ListModel.fromMap(Map data) {
     List<UserModel> users = [];
     List<ListItemModel> items = [];
 
-    if (res["users"] != null) {
-      var usersJson = jsonDecode(res["users"]);
+    if (data["users"] != null) {
+      var usersJson = jsonDecode(data["users"]);
       for (var user in usersJson) {
-        users.add(UserModel.fromJSON(user.toString()));
+        users.add(UserModel.fromMap(user));
       }
     }
 
-    if (res["items"] != null) {
-      var itemsJson = jsonDecode(res["items"]);
+    if (data["items"] != null) {
+      var itemsJson = jsonDecode(data["items"]);
       for (var item in itemsJson) {
-        items.add(ListItemModel.fromJSON(item.toString()));
+        items.add(ListItemModel.fromMap(item));
       }
     }
 
     return ListModel(
-        id: res["id"],
-        userID: res["userid"],
-        name: res["name"],
-        createdAt: res["created_at"],
-        countItems: res["cntitems"] != null ? res["cntitems"] : 0,
-        countUsers: res["cntusers"] != null ? res["cntusers"] : 1,
+        id: data["id"],
+        userID: data["userid"],
+        name: data["name"],
+        createdAt: data["created_at"],
+        countItems: data["cntitems"] != null ? data["cntitems"] : 0,
+        countUsers: data["cntusers"] != null ? data["cntusers"] : 1,
         cntBoughtItems:
-            res["cntboughtitems"] != null ? res["cntboughtitems"] : 0,
+            data["cntboughtitems"] != null ? data["cntboughtitems"] : 0,
         users: users,
         items: items);
   }

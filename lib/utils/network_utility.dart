@@ -3,50 +3,36 @@ import 'package:http/http.dart' as http;
 
 import '../constants.dart';
 
-void callAPI(
+Future<http.Response> callAPI(
   String url, {
   Object? params,
   Map<String, String>? headers,
   Function(String data)? callback,
   Function(int statusCode, String data)? errorCallback,
   RequestMethod requestMethod = RequestMethod.GET,
-}) {
+}) async {
   Uri _url = Uri.parse('$BASE_URL$url');
 
   switch (requestMethod) {
     case RequestMethod.POST:
-      http.post(_url, body: params, headers: headers).then((value) {
-        handleNetworkResponse(value, callback, errorCallback);
-      });
-      break;
+      return await http.post(_url, body: params, headers: headers);
 
     case RequestMethod.PUT:
-      http.put(_url, body: params, headers: headers).then((value) {
-        handleNetworkResponse(value, callback, errorCallback);
-      });
-      break;
+      return await http.put(_url, body: params, headers: headers);
 
     case RequestMethod.PATCH:
-      http.patch(_url, body: params, headers: headers).then((value) {
-        handleNetworkResponse(value, callback, errorCallback);
-      });
-      break;
+      return await http.patch(_url, body: params, headers: headers);
 
     case RequestMethod.DELETE:
-      http.delete(_url, body: params, headers: headers).then((value) {
-        handleNetworkResponse(value, callback, errorCallback);
-      });
-      break;
+      return await http.delete(_url, body: params, headers: headers);
 
     default:
-      http.get(_url, headers: headers).then((value) {
-        handleNetworkResponse(value, callback, errorCallback);
-      });
-      break;
+      return await http.get(_url, headers: headers);
   }
 }
 
-void handleNetworkResponse(http.Response response, Function? callback, Function? errorCallback) {
+/* void handleNetworkResponse(
+    http.Response response, Function? callback, Function? errorCallback) {
   if (response.request != null) {
     if (response.statusCode < 200 || response.statusCode > 399) {
       if (errorCallback != null) {
@@ -66,3 +52,4 @@ void handleNetworkResponse(http.Response response, Function? callback, Function?
     print("[ERROR] NO HTTP call");
   }
 }
+ */

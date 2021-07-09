@@ -10,30 +10,26 @@ class ListItemModel {
   bool isRepeating;
   String? purchasedAt;
 
-  ListItemModel({
-    required this.id,
-    required this.listID,
-    required this.userID,
-    this.purchasedUserID,
-    required this.name,
-    this.image,
-    this.purchasedAt,
-    this.isRepeating = false
-  });
+  ListItemModel(
+      {required this.id,
+      required this.listID,
+      required this.userID,
+      this.purchasedUserID,
+      required this.name,
+      this.image,
+      this.purchasedAt,
+      this.isRepeating = false});
 
-  static ListItemModel fromJSON(String data) {
-    var res = jsonDecode(data);
-
+  factory ListItemModel.fromMap(Map data) {
     return ListItemModel(
-      id: res["id"],
-      listID: res["listid"],
-      userID: res["userid"],
-      name: res["name"],
-      purchasedUserID: res["purchaseduserid"],
-      image: res["image"],
-      purchasedAt: res["purchased_at"],
-      isRepeating: res["is_repeating"]
-    );
+        id: data["id"],
+        listID: data["listid"],
+        userID: data["userid"],
+        name: data["name"],
+        purchasedUserID: data["purchaseduserid"],
+        image: data["image"],
+        purchasedAt: data["purchased_at"],
+        isRepeating: data["is_repeating"]);
   }
 
   @override
@@ -41,7 +37,7 @@ class ListItemModel {
     return name;
   }
 
-  String toStringDebug(){
+  String toStringDebug() {
     var output = "Item info: [$id | $name]\n";
     output += "Item User: $userID\n";
     output += "Item List: $listID\n";

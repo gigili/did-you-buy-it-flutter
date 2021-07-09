@@ -90,7 +90,7 @@ class _ListItemsState extends State<ListItems> {
         if (result["data"][0]['items'] != null) {
           var itemsJson = jsonDecode(result["data"][0]["items"]);
           for (var item in itemsJson) {
-            itms.add(ListItemModel.fromJSON(jsonEncode(item)));
+            itms.add(ListItemModel.fromMap(item));
           }
         }
 
