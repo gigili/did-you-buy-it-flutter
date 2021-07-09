@@ -17,6 +17,13 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController passwordController = TextEditingController();
 
   @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: 75,
@@ -100,6 +107,8 @@ class _LoginFormState extends State<LoginForm> {
 
     switch (result) {
       case LoginResult.OK:
+        usernameController.clear();
+        passwordController.clear();
         Navigator.of(context).pop();
         Navigator.pushNamed(context, ListsScreen.routeName);
         break;

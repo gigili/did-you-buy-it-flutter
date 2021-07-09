@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/api/auth_api.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
-import 'package:did_you_buy_it/utils/network_utility.dart';
-import 'package:did_you_buy_it/utils/types.dart';
 import 'package:flutter/material.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -19,6 +15,15 @@ class _RegisterFormState extends State<RegisterForm> {
   TextEditingController emailController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +135,10 @@ class _RegisterFormState extends State<RegisterForm> {
           message:
               "Account registered successfully.\nPlease confirm your email.",
         );
+        nameController.clear();
+        emailController.clear();
+        usernameController.clear();
+        passwordController.clear();
         break;
       case RegisterResult.FaildInputValidation:
         showMsgDialog(
