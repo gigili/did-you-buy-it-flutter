@@ -3,6 +3,7 @@ import 'package:did_you_buy_it/ui/screens/lists/lists.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/api/auth_api.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
+import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:flutter/material.dart';
 
 class LoginForm extends StatefulWidget {
@@ -100,42 +101,27 @@ class _LoginFormState extends State<LoginForm> {
       loginInProgress = true;
     });
 
-    LoginResult? result = await AuthApi.login(
+    ApiResult<LoginResult> result = await AuthApi.login(
       username: usernameController.text,
       password: passwordController.text,
     );
 
-    switch (result) {
-      case LoginResult.OK:
-        usernameController.clear();
-        passwordController.clear();
-        Navigator.of(context).pop();
-        Navigator.pushNamed(context, ListsScreen.routeName);
-        break;
-      case LoginResult.InvalidCredentials:
-        showMsgDialog(
-          context,
-          title: "Login failed",
-          message: "Invalid credentials provided",
-          closeButtonText: "OK",
-        );
-        break;
-      case LoginResult.FaildInputValidation:
-        showMsgDialog(
-          context,
-          title: "Login failed",
-          message: "Missing required fields",
-          closeButtonText: "OK",
-        );
-        break;
-      case LoginResult.LoginFailed:
-        showMsgDialog(
-          context,
-          title: "Login failed",
-          message: "Login failed",
-          closeButtonText: "OK",
-        );
-        break;
+    if (result.status == LoginResult.OK) {
+      usernameController.clear();
+      passwordController.clear();
+      Navigator.of(context).pop();
+      Navigator.pushNamed(context, ListsScreen.routeName);
+    } else {
+      var message = result.errorMessage ?? "Login failed";
+      var field = result.status == LoginResult.FaildInputValidation
+          ? "\nInvalid field: " + (result.errorField ?? "")
+          : "";
+      showMsgDialog(
+        context,
+        title: "Login failed",
+        message: "$message$field",
+        closeButtonText: "OK",
+      );
     }
 
     setState(() {
