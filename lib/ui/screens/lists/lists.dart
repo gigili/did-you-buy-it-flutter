@@ -9,6 +9,7 @@ import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/utils/types.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -52,25 +53,30 @@ class _ListsScreenState extends State<ListsScreen> {
           )
         ],
       ),
-      body: ListView.builder(
-        itemCount: lists.length,
-        itemBuilder: (BuildContext context, int index) {
-          if (index >= (lists.length - 1)) {
-            loadLists();
-          }
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 800),
+          child: ListView.builder(
+            itemCount: lists.length,
+            itemBuilder: (BuildContext context, int index) {
+              if (index >= (lists.length - 1)) {
+                loadLists();
+              }
 
-          return ListTile(
-            title: ListsViewTile(
-              item: lists[index],
-              onDeleteList: (ListModel itemToDelete) {
-                deleteList(itemToDelete);
-              },
-            ),
-            onTap: () {
-              viewList(index);
+              return ListTile(
+                title: ListsViewTile(
+                  item: lists[index],
+                  onDeleteList: (ListModel itemToDelete) {
+                    deleteList(itemToDelete);
+                  },
+                ),
+                onTap: () {
+                  viewList(index);
+                },
+              );
             },
-          );
-        },
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue[800],
