@@ -3,7 +3,6 @@ import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/api/api_result.dart';
 import 'package:did_you_buy_it/utils/api/auth_api.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
-import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:flutter/material.dart';
 
 class RegisterForm extends StatefulWidget {
