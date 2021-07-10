@@ -1,5 +1,4 @@
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/ui/screens/lists_items/list_items.dart';
 import 'package:did_you_buy_it/ui/widgets/list_info_labels.dart';
 import 'package:did_you_buy_it/utils/models/list_model.dart';
 import 'package:flutter/material.dart';
