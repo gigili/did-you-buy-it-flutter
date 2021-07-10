@@ -1,5 +1,6 @@
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
+import 'package:did_you_buy_it/utils/api/api_result.dart';
 import 'package:did_you_buy_it/utils/api/auth_api.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/material.dart';
@@ -120,58 +121,34 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   void register() async {
-    RegisterResult result = await AuthApi.register(
+    ApiResult<RegisterResult> result = await AuthApi.register(
       name: nameController.text,
       email: emailController.text,
       username: usernameController.text,
       password: passwordController.text,
     );
 
-    switch (result) {
-      case RegisterResult.OK:
-        showMsgDialog(
-          context,
-          title: "Registration successfull",
-          message:
-              "Account registered successfully.\nPlease confirm your email.",
-        );
-        nameController.clear();
-        emailController.clear();
-        usernameController.clear();
-        passwordController.clear();
-        break;
-      case RegisterResult.FaildInputValidation:
-        showMsgDialog(
-          context,
-          title: "Registration failed",
-          message: "Missing required fields",
-          closeButtonText: "OK",
-        );
-        break;
-      case RegisterResult.RegistrationFailed:
-        showMsgDialog(
-          context,
-          title: "Registration failed",
-          message: "Registration failed",
-          closeButtonText: "OK",
-        );
-        break;
-      case RegisterResult.UsernameTaken:
-        showMsgDialog(
-          context,
-          title: "Registration failed",
-          message: "Username is already taken",
-          closeButtonText: "OK",
-        );
-        break;
-      case RegisterResult.EmailTaken:
-        showMsgDialog(
-          context,
-          title: "Registration failed",
-          message: "Email is already taken",
-          closeButtonText: "OK",
-        );
-        break;
+    if (result.status == RegisterResult.OK) {
+      showMsgDialog(
+        context,
+        title: "Registration successfull",
+        message: "Account registered successfully.\nPlease confirm your email.",
+      );
+      nameController.clear();
+      emailController.clear();
+      usernameController.clear();
+      passwordController.clear();
+    } else {
+      var message = result.errorMessage ?? "Login failed";
+      var field = result.status == RegisterResult.FaildInputValidation
+          ? "\nInvalid field: " + (result.errorField ?? "")
+          : "";
+      showMsgDialog(
+        context,
+        title: "Registration failed",
+        message: "$message$field",
+        closeButtonText: "OK",
+      );
     }
   }
 }

@@ -9,6 +9,7 @@ import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/utils/types.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,7 +26,7 @@ class _ListsScreenState extends State<ListsScreen> {
   List<ListModel> lists = [];
   int listsPage = 0;
   bool loadMore = true;
-  late SharedPreferences prefs;
+  SharedPreferences? prefs;
 
   @override
   void initState() {
@@ -108,43 +109,48 @@ class _ListsScreenState extends State<ListsScreen> {
   }
 
   void loadLists({int limit = 10}) async {
-    if (loadMore) {
+    if (prefs == null) {
       prefs = await SharedPreferences.getInstance();
-      String token = prefs.getString(ACCESS_TOKEN_KEY)!;
-      callAPI(
+    }
+
+    if (loadMore) {
+      String token = prefs!.getString(ACCESS_TOKEN_KEY)!;
+
+      Response result = await callAPI(
         "/list?limit=$limit&page=$listsPage",
-        callback: (String data) {
-          var res = jsonDecode(data);
-
-          if (res["data"].length == 0) {
-            loadMore = false;
-            return;
-          }
-
-          List<ListModel> _ll = [];
-          for (var row in res["data"]) {
-            _ll.add(ListModel.fromMap(row));
-          }
-
-          setState(() {
-            lists.addAll(_ll);
-            listsPage++;
-          });
-        },
-        errorCallback: (int resultCode, String data) {
-          var result = jsonDecode(data);
-          showMsgDialog(context,
-              title: "Error", message: result["error"]["message"]);
-        },
         requestMethod: RequestMethod.GET,
         headers: {"Authorization": "Bearer $token"},
       );
+
+      var res = jsonDecode(result.body);
+      if (result.statusCode == 200) {
+        if (res["data"].length == 0) {
+          loadMore = false;
+          return;
+        }
+
+        List<ListModel> _ll = [];
+        for (var row in res["data"]) {
+          _ll.add(ListModel.fromMap(row));
+        }
+
+        setState(() {
+          lists.addAll(_ll);
+          listsPage++;
+        });
+      } else {
+        showMsgDialog(
+          context,
+          title: "Error",
+          message: res["error"]["message"],
+        );
+      }
     }
   }
 
   void createList(String listName) async {
     prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString(ACCESS_TOKEN_KEY)!;
+    String token = prefs!.getString(ACCESS_TOKEN_KEY)!;
     callAPI(
       "/list",
       params: {'name': listName},
@@ -178,7 +184,7 @@ class _ListsScreenState extends State<ListsScreen> {
 
   void deleteList(ListModel itemToDelete) async {
     prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString(ACCESS_TOKEN_KEY)!;
+    String token = prefs!.getString(ACCESS_TOKEN_KEY)!;
     callAPI(
       "/list/${itemToDelete.id}",
       callback: (String data) {
