@@ -139,9 +139,9 @@ class _RegisterFormState extends State<RegisterForm> {
       usernameController.clear();
       passwordController.clear();
     } else {
-      var message = result.errorMessage ?? "Login failed";
+      var message = result.error?.message ?? "Login failed";
       var field = result.status == RegisterResult.FaildInputValidation
-          ? "\nInvalid field: " + (result.errorField ?? "")
+          ? "\nInvalid field: " + (result.error?.field ?? "")
           : "";
       showMsgDialog(
         context,

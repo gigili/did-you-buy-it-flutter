@@ -20,11 +20,16 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            LoginScreen(),
-            RegisterScreen(),
-          ],
+        body: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 800),
+            child: TabBarView(
+              children: [
+                LoginScreen(),
+                RegisterScreen(),
+              ],
+            ),
+          ),
         ),
       ),
     );

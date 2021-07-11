@@ -29,29 +29,30 @@ class AuthApi {
     int statusCode = apiResponse.statusCode;
 
     if (statusCode >= 400) {
-      String errorMessage = result["error"]["message"];
-      String errorField = result["error"]["field"];
-
       switch (statusCode) {
         case 400:
-          return ApiResult(
-            status: LoginResult.FaildInputValidation,
-            errorMessage: errorMessage,
-            errorField: errorField,
+          return ApiResult<LoginResult>.fromResponse(
+            apiResponse,
+            LoginResult.FaildInputValidation,
           );
         case 401:
-          return ApiResult(
-            status: LoginResult.InvalidCredentials,
-            errorMessage: errorMessage,
-            errorField: errorField,
+          return ApiResult<LoginResult>.fromResponse(
+            apiResponse,
+            LoginResult.InvalidCredentials,
           );
       }
 
-      return ApiResult(status: LoginResult.LoginFailed, body: apiResponse.body);
+      return ApiResult<LoginResult>.fromResponse(
+        apiResponse,
+        LoginResult.LoginFailed,
+      );
     }
 
     if (!result["success"] || result["data"]["user"].toString().isEmpty)
-      return ApiResult(status: LoginResult.LoginFailed, body: apiResponse.body);
+      return ApiResult<LoginResult>.fromResponse(
+        apiResponse,
+        LoginResult.LoginFailed,
+      );
 
     UserModel user = UserModel.fromMap(result["data"]["user"]);
     TokenModel tokens = TokenModel.fromMap(result["data"]["token"]);
@@ -68,7 +69,10 @@ class AuthApi {
     await prefs.setString("user_username", user.username);
     await prefs.setString("user_image", user.image ?? "");
 
-    return ApiResult(status: LoginResult.OK);
+    return ApiResult<LoginResult>.fromResponse(
+      apiResponse,
+      LoginResult.OK,
+    );
   }
 
   static Future<ApiResult<RegisterResult>> register({
@@ -92,39 +96,39 @@ class AuthApi {
     var result = jsonDecode(registerResult.body);
 
     if (statusCode >= 400) {
-      String errorMessage = result["error"]["message"];
       String errorField = result["error"]["field"];
 
       switch (statusCode) {
         case 500:
-          return ApiResult(
-            status: RegisterResult.RegistrationFailed,
-            statusCode: statusCode,
-            errorMessage: errorMessage,
-            errorField: errorField,
+          return ApiResult<RegisterResult>.fromResponse(
+            registerResult,
+            RegisterResult.RegistrationFailed,
           );
         case 400:
-          return ApiResult(
-            status: RegisterResult.FaildInputValidation,
-            statusCode: statusCode,
-            errorMessage: errorMessage,
-            errorField: errorField,
+          return ApiResult<RegisterResult>.fromResponse(
+            registerResult,
+            RegisterResult.FaildInputValidation,
           );
         case 409:
-          return ApiResult(
-            status: errorField == "username"
+          return ApiResult<RegisterResult>.fromResponse(
+            registerResult,
+            errorField == "username"
                 ? RegisterResult.UsernameTaken
                 : RegisterResult.EmailTaken,
-            statusCode: registerResult.statusCode,
-            errorMessage: errorMessage,
-            errorField: errorField,
           );
       }
     }
 
-    if (statusCode == 201) return ApiResult(status: RegisterResult.OK);
+    if (statusCode == 201)
+      return ApiResult<RegisterResult>.fromResponse(
+        registerResult,
+        RegisterResult.OK,
+      );
 
-    return ApiResult(status: RegisterResult.RegistrationFailed);
+    return ApiResult<RegisterResult>.fromResponse(
+      registerResult,
+      RegisterResult.RegistrationFailed,
+    );
   }
 }
 

@@ -112,9 +112,9 @@ class _LoginFormState extends State<LoginForm> {
       Navigator.of(context).pop();
       Navigator.pushNamed(context, ListsScreen.routeName);
     } else {
-      var message = result.errorMessage ?? "Login failed";
+      var message = result.error?.message ?? "Login failed";
       var field = result.status == LoginResult.FaildInputValidation
-          ? "\nInvalid field: " + (result.errorField ?? "")
+          ? "\nInvalid field: " + (result.error?.field ?? "")
           : "";
       showMsgDialog(
         context,

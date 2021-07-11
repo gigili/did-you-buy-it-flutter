@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/utils/types.dart';
 import 'package:http/http.dart' as http;
@@ -11,21 +13,29 @@ Future<http.Response> callAPI(
   RequestMethod requestMethod = RequestMethod.GET,
 }) async {
   Uri _url = Uri.parse('$BASE_URL$url');
+  try {
+    switch (requestMethod) {
+      case RequestMethod.POST:
+        return await http.post(_url, body: params, headers: headers);
 
-  switch (requestMethod) {
-    case RequestMethod.POST:
-      return await http.post(_url, body: params, headers: headers);
+      case RequestMethod.PUT:
+        return await http.put(_url, body: params, headers: headers);
 
-    case RequestMethod.PUT:
-      return await http.put(_url, body: params, headers: headers);
+      case RequestMethod.PATCH:
+        return await http.patch(_url, body: params, headers: headers);
 
-    case RequestMethod.PATCH:
-      return await http.patch(_url, body: params, headers: headers);
+      case RequestMethod.DELETE:
+        return await http.delete(_url, body: params, headers: headers);
 
-    case RequestMethod.DELETE:
-      return await http.delete(_url, body: params, headers: headers);
-
-    default:
-      return await http.get(_url, headers: headers);
+      default:
+        return await http.get(_url, headers: headers);
+    }
+  } catch (ex) {
+    return http.Response(
+      jsonEncode({
+        'error': {'message': 'Service Unavailable', 'field': ''}
+      }),
+      503,
+    );
   }
 }
