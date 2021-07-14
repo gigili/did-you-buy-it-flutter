@@ -1,10 +1,13 @@
+import 'package:did_you_buy_it/auth/api/auth_api.dart';
+import 'package:did_you_buy_it/auth/exceptions/invalid_credentials_exception.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/screens/lists/lists.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/api/api_result.dart';
-import 'package:did_you_buy_it/utils/api/auth_api.dart';
+import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -97,35 +100,54 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void login() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
     setState(() {
       loginInProgress = true;
     });
 
-    ApiResult<LoginResult> result = await AuthApi.login(
-      username: usernameController.text,
-      password: passwordController.text,
-    );
+    try {
+      LoginResult result = await AuthApi.login(
+        username: usernameController.text,
+        password: passwordController.text,
+      );
 
-    if (result.status == LoginResult.OK) {
+      //Store token data into SharedPrefrences
+      await prefs.setString(ACCESS_TOKEN_KEY, result.tokens.accessToken);
+      await prefs.setString(
+          REFRESH_TOKEN_KEY, result.tokens.refreshToken ?? "");
+      await prefs.setInt("lastLogin", DateTime.now().millisecondsSinceEpoch);
+
+      //Store user data into SharedPrefrences
+      await prefs.setString("user_id", result.user.id);
+      await prefs.setString("user_name", result.user.name);
+      await prefs.setString("user_email", result.user.email);
+      await prefs.setString("user_username", result.user.username);
+      await prefs.setString("user_image", result.user.image ?? "");
+
       usernameController.clear();
       passwordController.clear();
+
       Navigator.of(context).pop();
       Navigator.pushNamed(context, ListsScreen.routeName);
-    } else {
-      var message = result.error?.message ?? "Login failed";
-      var field = result.status == LoginResult.FaildInputValidation
-          ? "\nInvalid field: " + (result.error?.field ?? "")
-          : "";
+    } on InvalidCredentialsException catch (_) {
       showMsgDialog(
         context,
         title: "Login failed",
-        message: "$message$field",
-        closeButtonText: "OK",
+        message: "Invalid credentials",
+      );
+    } on FailedInputValidationException catch (e) {
+      showMsgDialog(
+        context,
+        title: "Login failed",
+        message: "Invalid value provided for ${e.field}",
+      );
+    } catch (_) {
+      showMsgDialog(
+        context,
+        title: "Login failed",
+        message: "There was an error while logging in",
       );
     }
-
-    setState(() {
-      loginInProgress = false;
-    });
   }
 }

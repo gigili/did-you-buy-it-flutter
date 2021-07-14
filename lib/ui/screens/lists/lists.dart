@@ -1,16 +1,13 @@
-import 'dart:convert';
-
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/screens/lists/lists_view_tile.dart';
 import 'package:did_you_buy_it/ui/screens/lists_items/list_items.dart';
+import 'package:did_you_buy_it/utils/api/api_result.dart';
+import 'package:did_you_buy_it/utils/api/list_api.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/models/list_model.dart';
-import 'package:did_you_buy_it/utils/network_utility.dart';
-import 'package:did_you_buy_it/utils/types.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:http/http.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,8 +42,11 @@ class _ListsScreenState extends State<ListsScreen> {
             padding: EdgeInsets.only(right: paddingSmall),
             child: IconButton(
               onPressed: () {
-                showMsgDialog(context,
-                    title: "Work in progress", message: "NOT IMPLEMENTED YET");
+                showMsgDialog(
+                  context,
+                  title: "Work in progress",
+                  message: "NOT IMPLEMENTED YET",
+                );
               },
               icon: Icon(Icons.search),
             ),
@@ -119,104 +119,108 @@ class _ListsScreenState extends State<ListsScreen> {
       prefs = await SharedPreferences.getInstance();
     }
 
-    if (loadMore) {
-      String token = prefs!.getString(ACCESS_TOKEN_KEY)!;
+    if (!loadMore) return;
 
-      Response result = await callAPI(
-        "/list?limit=$limit&page=$listsPage",
-        requestMethod: RequestMethod.GET,
-        headers: {"Authorization": "Bearer $token"},
-      );
+    ApiResult<ListApiResult> result =
+        await ListApi.getLists(listsPage, limit: limit);
 
-      var res = jsonDecode(result.body);
-      if (result.statusCode == 200) {
-        if (res["data"].length == 0) {
-          loadMore = false;
-          return;
-        }
-
+    switch (result.status) {
+      case ListApiResult.OK:
         List<ListModel> _ll = [];
-        for (var row in res["data"]) {
-          _ll.add(ListModel.fromMap(row));
-        }
+        if (result.data != null) {
+          for (var entry in result.data!.entries) {
+            _ll.add(ListModel.fromMap(entry as Map));
+          }
 
-        setState(() {
-          lists.addAll(_ll);
-          listsPage++;
-        });
-      } else {
+          setState(() {
+            lists.addAll(_ll);
+            listsPage++;
+          });
+        }
+        break;
+      case ListApiResult.InvalidToken:
+      case ListApiResult.FailedLoadingLists:
         showMsgDialog(
           context,
-          title: "Error",
-          message: res["error"]["message"],
+          title: "Error loading lists",
+          message:
+              result.error?.message ?? "There was an error while loading lists",
         );
-      }
+        break;
+      case ListApiResult.NoMoreResults:
+        loadMore = false;
+        return;
     }
   }
 
   void createList(String listName) async {
-    prefs = await SharedPreferences.getInstance();
-    String token = prefs!.getString(ACCESS_TOKEN_KEY)!;
-    callAPI(
-      "/list",
-      params: {'name': listName},
-      callback: (String data) {
-        var result = jsonDecode(data);
-        if (result["success"]) {
-          showMsgDialog(
-            context,
-            title: "List created",
-            message: "$listName was created successfully",
-          );
+    ApiResult<CreateListApiResult> result = await ListApi.createList(listName);
 
-          ListModel list = ListModel.fromMap(result["data"]);
-          setState(() {
-            lists.insert(0, list);
-          });
-        }
-      },
-      errorCallback: (statusCode, data) {
-        var result = jsonDecode(data);
+    switch (result.status) {
+      case CreateListApiResult.OK:
         showMsgDialog(
           context,
-          title: "Error",
-          message: result["error"]["message"],
+          title: "List created",
+          message: "$listName was created successfully",
         );
-      },
-      requestMethod: RequestMethod.POST,
-      headers: {"Authorization": "Bearer $token"},
-    );
+
+        ListModel list = ListModel.fromMap(result.data as Map);
+        setState(() {
+          lists.insert(0, list);
+        });
+        break;
+      case CreateListApiResult.InvalidToken:
+        showMsgDialog(context,
+            title: "Error creating a list",
+            message: "Invalid session.\nTry logging in again.");
+        break;
+      case CreateListApiResult.FailedInputValidation:
+        var field = "\nInvalid field: " + (result.error?.field ?? "");
+        var message = result.error?.message ?? "Invalid value provided";
+        showMsgDialog(
+          context,
+          title: "Error creating a list",
+          message: "$message$field",
+        );
+        break;
+      case CreateListApiResult.FailedCreatingList:
+        var message = result.error?.message ?? "Unable to create a new list";
+        showMsgDialog(
+          context,
+          title: "Error creating a list",
+          message: "$message",
+        );
+        break;
+    }
   }
 
   void deleteList(ListModel itemToDelete) async {
-    prefs = await SharedPreferences.getInstance();
-    String token = prefs!.getString(ACCESS_TOKEN_KEY)!;
-    callAPI(
-      "/list/${itemToDelete.id}",
-      callback: (String data) {
-        var result = jsonDecode(data);
-        if (result["success"]) {
-          showMsgDialog(
-            context,
-            title: "List deleted",
-            message: "${itemToDelete.name} was deleted successfully",
-          );
+    ApiResult<DeleteListApiResult> result =
+        await ListApi.deleteList(itemToDelete);
 
-          setState(() {
-            lists.removeWhere((element) => element.id == itemToDelete.id);
-          });
-        }
-      },
-      errorCallback: (statusCode, data) {
-        var result = jsonDecode(data);
+    switch (result.status) {
+      case DeleteListApiResult.OK:
         showMsgDialog(
           context,
-          title: "Error",
-          message: result["error"]["message"],
+          title: "List deleted",
+          message: "${itemToDelete.name} was deleted successfully",
         );
-      },
-      requestMethod: RequestMethod.DELETE,
-      headers: {"Authorization": "Bearer $token"},
-    );
+
+        setState(() {
+          lists.removeWhere((element) => element.id == itemToDelete.id);
+        });
+        break;
+      case DeleteListApiResult.InvalidToken:
+      case DeleteListApiResult.InvalidListID:
+      case DeleteListApiResult.ListNotFound:
+      case DeleteListApiResult.NotAuthorized:
+        var message = result.error?.message ?? "Unable to delete a list";
+        showMsgDialog(
+          context,
+          title: "Error deleting a list",
+          message: message,
+        );
+        break;
+    }
   }
 }

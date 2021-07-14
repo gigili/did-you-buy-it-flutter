@@ -1,7 +1,8 @@
+import 'package:did_you_buy_it/auth/api/auth_api.dart';
+import 'package:did_you_buy_it/auth/exceptions/duplicate_registration_exception.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
-import 'package:did_you_buy_it/utils/api/api_result.dart';
-import 'package:did_you_buy_it/utils/api/auth_api.dart';
+import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/material.dart';
 
@@ -121,33 +122,42 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   void register() async {
-    ApiResult<RegisterResult> result = await AuthApi.register(
-      name: nameController.text,
-      email: emailController.text,
-      username: usernameController.text,
-      password: passwordController.text,
-    );
+    try {
+      await AuthApi.register(
+        name: nameController.text,
+        email: emailController.text,
+        username: usernameController.text,
+        password: passwordController.text,
+      );
 
-    if (result.status == RegisterResult.OK) {
       showMsgDialog(
         context,
         title: "Registration successfull",
         message: "Account registered successfully.\nPlease confirm your email.",
       );
+
       nameController.clear();
       emailController.clear();
       usernameController.clear();
       passwordController.clear();
-    } else {
-      var message = result.error?.message ?? "Login failed";
-      var field = result.status == RegisterResult.FaildInputValidation
-          ? "\nInvalid field: " + (result.error?.field ?? "")
-          : "";
+    } on DuplicateRegistrationException catch (e) {
+      String duplicateField = e.isDuplicateEmail ? "email" : "username";
       showMsgDialog(
         context,
         title: "Registration failed",
-        message: "$message$field",
-        closeButtonText: "OK",
+        message: "Value for $duplicateField already exists",
+      );
+    } on FailedInputValidationException catch (e) {
+      showMsgDialog(
+        context,
+        title: "Login failed",
+        message: "Invalid value provided for ${e.field}",
+      );
+    } catch (_) {
+      showMsgDialog(
+        context,
+        title: "Registration failed",
+        message: "There was an error registering an account",
       );
     }
   }
