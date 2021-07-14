@@ -1,5 +1,5 @@
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/utils/models/list_model.dart';
+import 'package:did_you_buy_it/list/models/list_model.dart';
 import 'package:flutter/material.dart';
 
 class ListInfoLabels extends StatelessWidget {

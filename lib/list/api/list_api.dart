@@ -1,20 +1,18 @@
 import 'dart:convert';
 
-import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/exceptions/failed_loading_lists_exception.dart';
-import 'package:did_you_buy_it/utils/api/api_result.dart';
+import 'package:did_you_buy_it/list/exceptions/list_create_failed_exception.dart';
+import 'package:did_you_buy_it/list/exceptions/list_not_found_exception.dart';
+import 'package:did_you_buy_it/list/models/list_model.dart';
 import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
 import 'package:did_you_buy_it/utils/exceptions/invalid_token_exception.dart';
 import 'package:did_you_buy_it/utils/exceptions/no_more_results_exception.dart';
-import 'package:did_you_buy_it/utils/models/list_model.dart';
+import 'package:did_you_buy_it/utils/exceptions/unauthorized_exception.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/utils/types.dart';
 import 'package:http/http.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ListApi {
-  static SharedPreferences? _preferences;
-
   static Future<List<ListModel>> getLists({
     required int page,
     required String token,
@@ -49,45 +47,33 @@ class ListApi {
     }
   }
 
-  static Future<ApiResult<CreateListApiResult>> createList(
-      String listName) async {
-    if (_preferences == null)
-      _preferences = await SharedPreferences.getInstance();
-    String? token = _preferences!.getString(ACCESS_TOKEN_KEY);
-
-    if (token == null) {
-      return ApiResult(status: CreateListApiResult.InvalidToken);
-    }
-
+  static Future<ListModel> createList({
+    required String name,
+    required String token,
+  }) async {
     Response result = await callAPI(
       "/list",
-      params: {'name': listName},
+      params: {'name': name},
       requestMethod: RequestMethod.POST,
       headers: {"Authorization": "Bearer $token"},
     );
 
+    var res = jsonDecode(result.body);
     if (result.statusCode == 201) {
-      return ApiResult.fromResponse(result, CreateListApiResult.OK);
+      return ListModel.fromMap(res["data"]);
     } else if (result.statusCode == 401) {
-      return ApiResult.fromResponse(result, CreateListApiResult.InvalidToken);
+      throw InvalidTokenException();
     } else if (result.statusCode == 400) {
-      return ApiResult.fromResponse(
-          result, CreateListApiResult.FailedInputValidation);
+      throw FailedInputValidationException(res["error"]["field"]);
     }
 
-    return ApiResult.fromResponse(
-        result, CreateListApiResult.FailedCreatingList);
+    throw ListCreateFailedException();
   }
 
-  static Future<ApiResult<DeleteListApiResult>> deleteList(
-      ListModel list) async {
-    if (_preferences == null)
-      _preferences = await SharedPreferences.getInstance();
-    String? token = _preferences!.getString(ACCESS_TOKEN_KEY);
-
-    if (token == null) {
-      return ApiResult(status: DeleteListApiResult.InvalidToken);
-    }
+  static Future<void> deleteList({
+    required ListModel list,
+    required String token,
+  }) async {
     Response response = await callAPI(
       "/list/${list.id}",
       requestMethod: RequestMethod.DELETE,
@@ -95,27 +81,18 @@ class ListApi {
     );
 
     switch (response.statusCode) {
-      case 200:
-        return ApiResult(status: DeleteListApiResult.OK);
-
       case 400:
-        return ApiResult.fromResponse(
-            response, DeleteListApiResult.InvalidListID);
+        throw FailedInputValidationException("list ID");
 
       case 401:
-        return ApiResult.fromResponse(
-            response, DeleteListApiResult.InvalidToken);
+        throw InvalidTokenException();
 
       case 403:
-        return ApiResult.fromResponse(
-            response, DeleteListApiResult.NotAuthorized);
+        throw UnauthroziedException();
 
       case 404:
-        return ApiResult.fromResponse(
-            response, DeleteListApiResult.ListNotFound);
+        throw ListNotFoundException();
     }
-
-    return ApiResult(status: DeleteListApiResult.OK);
   }
 }
 

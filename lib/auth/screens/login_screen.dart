@@ -1,5 +1,5 @@
 import 'package:did_you_buy_it/auth/forms/login_form.dart';
-import 'package:did_you_buy_it/ui/screens/auth/password_reset.dart';
+import 'package:did_you_buy_it/auth/screens/password_reset.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/models/list_item_model.dart';
-import 'package:did_you_buy_it/utils/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class ListItemTileWithImage extends StatefulWidget {

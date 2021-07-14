@@ -4,10 +4,10 @@ import 'package:did_you_buy_it/auth/exceptions/duplicate_registration_exception.
 import 'package:did_you_buy_it/auth/exceptions/invalid_credentials_exception.dart';
 import 'package:did_you_buy_it/auth/exceptions/login_failed_exception.dart';
 import 'package:did_you_buy_it/auth/exceptions/registration_failed_exception.dart';
+import 'package:did_you_buy_it/auth/models/token_model.dart';
+import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
-import 'package:did_you_buy_it/utils/models/token_model.dart';
-import 'package:did_you_buy_it/utils/models/user_model.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/utils/types.dart';
 import 'package:http/http.dart';

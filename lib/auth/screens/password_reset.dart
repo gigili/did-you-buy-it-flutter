@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:did_you_buy_it/auth/forms/password_reset_form.dart';
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/ui/forms/auth/password_reset_form.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
@@ -39,7 +39,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                     children: [
                       showPasswordResetForm
                           ? PasswordResetForm(
-                              onCodeChanged: (value)  => passwordResetCode = value,
+                              onCodeChanged: (value) =>
+                                  passwordResetCode = value,
                               onPasswordChange: (value) => newPassword = value,
                             )
                           : TextFormField(

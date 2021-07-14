@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/list/models/list_model.dart';
 import 'package:did_you_buy_it/ui/screens/lists_items/list_item_tile.dart';
 import 'package:did_you_buy_it/ui/screens/lists_items/list_item_tile_with_image.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/models/list_item_model.dart';
-import 'package:did_you_buy_it/utils/models/list_model.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/utils/types.dart';
 import 'package:flutter/cupertino.dart';
