@@ -1,0 +1,1 @@
+class NoMoreResultsException implements Exception {}

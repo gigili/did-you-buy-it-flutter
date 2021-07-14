@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/list/exceptions/failed_loading_lists_exception.dart';
 import 'package:did_you_buy_it/utils/api/api_result.dart';
+import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
+import 'package:did_you_buy_it/utils/exceptions/invalid_token_exception.dart';
+import 'package:did_you_buy_it/utils/exceptions/no_more_results_exception.dart';
 import 'package:did_you_buy_it/utils/models/list_model.dart';
 import 'package:did_you_buy_it/utils/network_utility.dart';
 import 'package:did_you_buy_it/utils/types.dart';
@@ -11,18 +15,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ListApi {
   static SharedPreferences? _preferences;
 
-  static Future<ApiResult<ListApiResult>> getLists(
-    int page, {
+  static Future<List<ListModel>> getLists({
+    required int page,
+    required String token,
     int limit = 10,
   }) async {
-    if (_preferences == null)
-      _preferences = await SharedPreferences.getInstance();
-    String? token = _preferences!.getString(ACCESS_TOKEN_KEY);
-
-    if (token == null) {
-      return ApiResult(status: ListApiResult.InvalidToken);
-    }
-
     Response result = await callAPI(
       "/list?limit=$limit&page=$page",
       requestMethod: RequestMethod.GET,
@@ -30,14 +27,25 @@ class ListApi {
     );
 
     var res = jsonDecode(result.body);
-    if (result.statusCode == 200) {
-      if (res["data"].length == 0) {
-        return ApiResult(status: ListApiResult.NoMoreResults);
-      }
 
-      return ApiResult.fromResponse(result, ListApiResult.OK);
-    } else {
-      return ApiResult.fromResponse(result, ListApiResult.FailedLoadingLists);
+    switch (result.statusCode) {
+      case 401:
+        throw InvalidTokenException();
+
+      case 200:
+        if (res["data"].length == 0) throw NoMoreResultsException();
+
+        List<ListModel> lists = [];
+        if (res["data"] != null) {
+          for (var row in res["data"]) {
+            lists.add(ListModel.fromMap(row));
+          }
+        }
+
+        return lists;
+
+      default:
+        throw FailedLoadingListsException();
     }
   }
 
@@ -109,13 +117,6 @@ class ListApi {
 
     return ApiResult(status: DeleteListApiResult.OK);
   }
-}
-
-enum ListApiResult {
-  OK,
-  InvalidToken,
-  FailedLoadingLists,
-  NoMoreResults,
 }
 
 enum CreateListApiResult {

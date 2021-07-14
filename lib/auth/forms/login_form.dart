@@ -1,9 +1,8 @@
 import 'package:did_you_buy_it/auth/api/auth_api.dart';
 import 'package:did_you_buy_it/auth/exceptions/invalid_credentials_exception.dart';
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/ui/screens/lists/lists.dart';
+import 'package:did_you_buy_it/list/screens/lists.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
-import 'package:did_you_buy_it/utils/api/api_result.dart';
 import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/material.dart';

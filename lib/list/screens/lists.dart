@@ -1,8 +1,9 @@
 import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/list/api/list_api.dart';
 import 'package:did_you_buy_it/ui/screens/lists/lists_view_tile.dart';
 import 'package:did_you_buy_it/ui/screens/lists_items/list_items.dart';
 import 'package:did_you_buy_it/utils/api/api_result.dart';
-import 'package:did_you_buy_it/utils/api/list_api.dart';
+import 'package:did_you_buy_it/utils/exceptions/no_more_results_exception.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/utils/models/list_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -115,41 +116,30 @@ class _ListsScreenState extends State<ListsScreen> {
   }
 
   void loadLists({int limit = 10}) async {
+    if (!loadMore) return;
+
     if (prefs == null) {
       prefs = await SharedPreferences.getInstance();
     }
 
-    if (!loadMore) return;
+    String? token = prefs!.getString(ACCESS_TOKEN_KEY);
+    if (token == null) return;
 
-    ApiResult<ListApiResult> result =
-        await ListApi.getLists(listsPage, limit: limit);
-
-    switch (result.status) {
-      case ListApiResult.OK:
-        List<ListModel> _ll = [];
-        if (result.data != null) {
-          for (var entry in result.data!.entries) {
-            _ll.add(ListModel.fromMap(entry as Map));
-          }
-
-          setState(() {
-            lists.addAll(_ll);
-            listsPage++;
-          });
-        }
-        break;
-      case ListApiResult.InvalidToken:
-      case ListApiResult.FailedLoadingLists:
-        showMsgDialog(
-          context,
-          title: "Error loading lists",
-          message:
-              result.error?.message ?? "There was an error while loading lists",
-        );
-        break;
-      case ListApiResult.NoMoreResults:
-        loadMore = false;
-        return;
+    try {
+      List<ListModel> result =
+          await ListApi.getLists(page: listsPage, token: token, limit: limit);
+      setState(() {
+        lists.addAll(result);
+        listsPage++;
+      });
+    } on NoMoreResultsException catch (_) {
+      loadMore = false;
+    } catch (_) {
+      showMsgDialog(
+        context,
+        title: "Error loading lists",
+        message: "There was an error while loading lists",
+      );
     }
   }
 
