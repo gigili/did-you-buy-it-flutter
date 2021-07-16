@@ -1,0 +1,1 @@
+class ServiceUnavailableException implements Exception {}

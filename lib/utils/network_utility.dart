@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/utils/exceptions/service_unavailable_exception.dart';
 import 'package:did_you_buy_it/utils/types.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,11 +32,6 @@ Future<http.Response> callAPI(
         return await http.get(_url, headers: headers);
     }
   } catch (ex) {
-    return http.Response(
-      jsonEncode({
-        'error': {'message': 'Service Unavailable', 'field': ''}
-      }),
-      503,
-    );
+    throw ServiceUnavailableException();
   }
 }

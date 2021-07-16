@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:did_you_buy_it/auth/api/auth_api.dart';
 import 'package:did_you_buy_it/auth/exceptions/invalid_credentials_exception.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/screens/lists.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
+import 'package:did_you_buy_it/utils/exceptions/service_unavailable_exception.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -141,12 +144,22 @@ class _LoginFormState extends State<LoginForm> {
         title: "Login failed",
         message: "Invalid value provided for ${e.field}",
       );
+    } on ServiceUnavailableException catch (_) {
+      showMsgDialog(
+        context,
+        title: "Service status",
+        message: "Service unavailable",
+      );
     } catch (_) {
       showMsgDialog(
         context,
         title: "Login failed",
         message: "There was an error while logging in",
       );
+    } finally {
+      setState(() {
+        loginInProgress = false;
+      });
     }
   }
 }

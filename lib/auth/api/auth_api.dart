@@ -62,7 +62,7 @@ class AuthApi {
 
     int statusCode = registerResult.statusCode;
     var result = jsonDecode(registerResult.body);
-
+    print(registerResult.body);
     if (statusCode >= 400) {
       String errorField = result["error"]["field"];
 

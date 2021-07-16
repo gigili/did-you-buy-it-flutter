@@ -14,6 +14,7 @@ class HomeScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Did You Buy It?"),
           bottom: TabBar(
+            indicatorColor: Colors.white60,
             tabs: [
               Tab(text: "Login"),
               Tab(text: "Register"),
