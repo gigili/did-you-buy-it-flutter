@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/.env.dart';
 import 'package:did_you_buy_it/utils/exceptions/service_unavailable_exception.dart';
 import 'package:did_you_buy_it/utils/types.dart';
 import 'package:http/http.dart' as http;

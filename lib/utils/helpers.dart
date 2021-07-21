@@ -55,3 +55,7 @@ Future<bool> isLoggedIn() async {
 
   return isLoggedIn;
 }
+
+Color hexToColor(String code) {
+  return new Color(int.parse(code.substring(0, 6), radix: 16) + 0xFF000000);
+}

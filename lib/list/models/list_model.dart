@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:did_you_buy_it/auth/models/user_model.dart';
-import 'package:did_you_buy_it/utils/models/list_item_model.dart';
+import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
 
 class ListModel {
   String id;
@@ -13,6 +13,7 @@ class ListModel {
   int cntBoughtItems = 0;
   List<UserModel>? users;
   List<ListItemModel>? items;
+  String? color;
 
   ListModel({
     required this.id,
@@ -24,6 +25,7 @@ class ListModel {
     this.cntBoughtItems = 0,
     this.users,
     this.items,
+    this.color,
   });
 
   factory ListModel.fromMap(Map data) {
@@ -45,15 +47,17 @@ class ListModel {
     }
 
     return ListModel(
-        id: data["id"],
-        userID: data["userid"],
-        name: data["name"],
-        createdAt: data["created_at"],
-        countItems: data["cntitems"] != null ? data["cntitems"] : 0,
-        countUsers: data["cntusers"] != null ? data["cntusers"] : 1,
-        cntBoughtItems:
-            data["cntboughtitems"] != null ? data["cntboughtitems"] : 0,
-        users: users,
-        items: items);
+      id: data["id"],
+      userID: data["userid"],
+      name: data["name"],
+      createdAt: data["created_at"],
+      countItems: data["cntitems"] != null ? data["cntitems"] : 0,
+      countUsers: data["cntusers"] != null ? data["cntusers"] : 1,
+      cntBoughtItems:
+          data["cntboughtitems"] != null ? data["cntboughtitems"] : 0,
+      users: users,
+      items: items,
+      color: data["color"] ?? null,
+    );
   }
 }

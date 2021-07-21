@@ -2,16 +2,22 @@ import 'dart:convert';
 
 import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/.env.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
-import 'package:did_you_buy_it/utils/models/list_item_model.dart';
+import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
 import 'package:flutter/material.dart';
 
 class ListItemTileWithImage extends StatefulWidget {
   final ListItemModel item;
   final String? strUsers;
+  final String? color;
 
-  const ListItemTileWithImage({Key? key, required this.item, this.strUsers})
-      : super(key: key);
+  const ListItemTileWithImage({
+    Key? key,
+    required this.item,
+    this.strUsers,
+    this.color,
+  }) : super(key: key);
 
   @override
   _ListItemTileWithImageState createState() => _ListItemTileWithImageState();
@@ -26,7 +32,7 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
       title: Container(
         margin: EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: widget.color != null ? hexToColor(widget.color!) : Colors.blue,
           boxShadow: [
             BoxShadow(
               blurRadius: 3,
@@ -55,21 +61,10 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
                       widget.item.name,
                       style: accentElementStyle,
                     ),
-                    widget.item.isRepeating
-                        ? Icon(
-                            Icons.refresh,
-                            color: Colors.grey[700],
-                          )
-                        : SizedBox()
+                    if (widget.item.isRepeating) Icon(Icons.refresh)
                   ],
                 ),
               ),
-              SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: paddingMedium),
-                child: Text("Qty: //TODO"),
-              ),
-              SizedBox(height: 10),
               widget.item.purchasedAt != null
                   ? Padding(
                       padding:
@@ -77,6 +72,7 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          SizedBox(height: 10),
                           Divider(color: Colors.grey[300], thickness: 2),
                           Text(
                               "Bought on: ${formatDate(widget.item.purchasedAt!)}"),
@@ -85,7 +81,7 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
                         ],
                       ),
                     )
-                  : SizedBox(),
+                  : SizedBox(height: 10),
             ],
           ),
         ),

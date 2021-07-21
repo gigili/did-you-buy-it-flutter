@@ -1,6 +1,7 @@
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
 import 'package:did_you_buy_it/ui/widgets/list_info_labels.dart';
+import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/material.dart';
 
 class ListsViewTile extends StatelessWidget {
@@ -20,7 +21,7 @@ class ListsViewTile extends StatelessWidget {
       padding: EdgeInsets.all(paddingMedium),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.blue,
+        color: item.color != null ? hexToColor(item.color!) : Colors.blue,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

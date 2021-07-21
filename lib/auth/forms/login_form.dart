@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:did_you_buy_it/auth/api/auth_api.dart';
 import 'package:did_you_buy_it/auth/exceptions/invalid_credentials_exception.dart';
 import 'package:did_you_buy_it/constants.dart';

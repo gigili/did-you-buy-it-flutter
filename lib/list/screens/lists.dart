@@ -2,7 +2,8 @@ import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/api/list_api.dart';
 import 'package:did_you_buy_it/list/components/lists_view_tile.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
-import 'package:did_you_buy_it/ui/screens/lists_items/list_items.dart';
+import 'package:did_you_buy_it/list/screens/create_list_screen.dart';
+import 'package:did_you_buy_it/list_item/screens/list_items.dart';
 import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
 import 'package:did_you_buy_it/utils/exceptions/invalid_token_exception.dart';
 import 'package:did_you_buy_it/utils/exceptions/no_more_results_exception.dart';
@@ -10,7 +11,6 @@ import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListsScreen extends StatefulWidget {
@@ -83,7 +83,7 @@ class _ListsScreenState extends State<ListsScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue[800],
         onPressed: () async {
-          String? listName = await prompt(
+          /* String? listName = await prompt(
             context,
             title: Text("Create new list"),
             textOK: Text("Create list"),
@@ -91,11 +91,12 @@ class _ListsScreenState extends State<ListsScreen> {
             hintText: "Enter name for a new list",
           );
 
-          if (listName == null || listName.isEmpty) {
+          if (listName == null || listName.trim().isEmpty) {
             return showMsgDialog(context, message: 'List name can\'t be empty');
-          }
+          } */
 
-          createList(listName);
+          Navigator.of(context).pushNamed(CreateListScreen.routeName);
+          //createList(listName);
         },
         child: Icon(Icons.add),
       ),

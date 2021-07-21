@@ -1,18 +1,19 @@
-import 'dart:convert';
-
 import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
-import 'package:did_you_buy_it/utils/models/list_item_model.dart';
+import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ListItemTile extends StatefulWidget {
   final ListItemModel item;
-  final String? strUsers;
+  final String? color;
 
-  const ListItemTile({Key? key, required this.item, this.strUsers})
-      : super(key: key);
+  const ListItemTile({
+    Key? key,
+    required this.item,
+    this.color,
+  }) : super(key: key);
 
   @override
   _ListItemTileState createState() => _ListItemTileState();
@@ -27,7 +28,7 @@ class _ListItemTileState extends State<ListItemTile> {
       title: Container(
         margin: EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: widget.color != null ? hexToColor(widget.color!) : Colors.blue,
           boxShadow: [
             BoxShadow(
               blurRadius: 3,
@@ -49,26 +50,18 @@ class _ListItemTileState extends State<ListItemTile> {
                     widget.item.name,
                     style: accentElementStyle,
                   ),
-                  widget.item.isRepeating
-                      ? Icon(
-                          Icons.refresh,
-                          color: Colors.grey[700],
-                        )
-                      : SizedBox()
+                  if (widget.item.isRepeating) Icon(Icons.refresh)
                 ],
               ),
-              SizedBox(height: 10),
-              Text("Qty: //TODO"),
-              SizedBox(height: 10),
               widget.item.purchasedAt != null
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 10),
                         Divider(color: Colors.grey[300], thickness: 2),
                         Text(
                             "Bought on: ${formatDate(widget.item.purchasedAt!)}"),
-                        Text(
-                            "Bought by: ${getUserData(widget.item.purchasedUserID)}"),
+                        Text("Bought by: ${widget.item.purchaseName}"),
                       ],
                     )
                   : SizedBox(),
@@ -77,21 +70,5 @@ class _ListItemTileState extends State<ListItemTile> {
         ),
       ),
     );
-  }
-
-  UserModel getUserData(String? userID) {
-    if (widget.strUsers == null) {
-      return UserModel(id: "", name: "", email: "", username: "");
-    }
-
-    if (users.length == 0) {
-      var usersJSON = jsonDecode(widget.strUsers!);
-      for (var item in usersJSON) {
-        var user = UserModel.fromMap(item);
-        users.add(user);
-      }
-    }
-
-    return users.firstWhere((user) => user.id == userID);
   }
 }

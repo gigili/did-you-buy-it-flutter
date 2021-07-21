@@ -94,19 +94,30 @@ class ListApi {
         throw ListNotFoundException();
     }
   }
-}
 
-enum CreateListApiResult {
-  OK,
-  InvalidToken,
-  FailedInputValidation,
-  FailedCreatingList
-}
+  static Future<ListModel> getList({
+    required String listID,
+    required String token,
+  }) async {
+    Response response = await callAPI(
+      "/list/$listID",
+      requestMethod: RequestMethod.GET,
+      headers: {"Authorization": "Bearer $token"},
+    );
 
-enum DeleteListApiResult {
-  OK,
-  InvalidToken,
-  InvalidListID,
-  ListNotFound,
-  NotAuthorized
+    switch (response.statusCode) {
+      case 401:
+        throw InvalidTokenException();
+      case 400:
+        throw FailedInputValidationException("listID");
+      case 404:
+        throw ListNotFoundException();
+      case 200:
+        var res = jsonDecode(response.body);
+        if (res["data"].length == 0) throw NoMoreResultsException();
+        return ListModel.fromMap(res['data'][0]);
+    }
+
+    throw FailedLoadingListsException();
+  }
 }
