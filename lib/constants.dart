@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-const String BASE_URL = "http://192.168.0.7:8099";
 const String ACCESS_TOKEN_KEY = "API_ACCESS_TOKEN";
 const String REFRESH_TOKEN_KEY = "API_REFRESH_TOKEN";
 const String APP_NAME = "Did You Buy It?";
+const Color DEFAULT_LIST_COLOR = Color(0xFF2196F3);
 
 RegExp emailRegex = RegExp(
     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");

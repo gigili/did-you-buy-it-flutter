@@ -1,16 +1,9 @@
-# did_you_buy_it
+# Did You Buy It?
 
-Did You Buy It?
+![Repo size badge](https://img.shields.io/github/repo-size/gigili/did-you-buy-it-flutter?style=for-the-badge)
+![Open issues badge](https://img.shields.io/github/issues/gigili/did-you-buy-it-flutter?style=for-the-badge)
+![Licence badge](https://img.shields.io/github/license/gigili/did-you-buy-it-flutter?style=for-the-badge)
+![Forks badge](https://img.shields.io/github/forks/gigili/did-you-buy-it-flutter?style=for-the-badge)
+![Stars badge](https://img.shields.io/github/stars/gigili/did-you-buy-it-flutter?style=for-the-badge)
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+"Did You Buy It?" is a shopping list app designed to help people keep track of stuff they need to buy.

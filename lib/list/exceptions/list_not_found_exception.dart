@@ -1,0 +1,1 @@
+class ListNotFoundException implements Exception {}

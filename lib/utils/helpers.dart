@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:did_you_buy_it/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String hashStr(String str) {
   var bytes = utf8.encode(str); // data being hashed
@@ -12,7 +14,8 @@ String hashStr(String str) {
 void showMsgDialog(BuildContext context,
     {String title = "Error",
     String message = "There was an error",
-    String closeButtonText = "Close"}) {
+    String closeButtonText = "Close",
+    Function? callBack}) {
   // flutter defined function
   showDialog(
     context: context,
@@ -27,6 +30,10 @@ void showMsgDialog(BuildContext context,
             child: new Text(closeButtonText),
             onPressed: () {
               Navigator.of(context).pop();
+
+              if (callBack != null) {
+                callBack();
+              }
             },
           ),
         ],
@@ -40,4 +47,20 @@ String formatDate(String dateTime, {DateFormat? format}) {
     format = DateFormat.yMd("en_US");
   }
   return format.format(DateTime.parse(dateTime));
+}
+
+Future<bool> isLoggedIn() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isLoggedIn = (prefs.getString(ACCESS_TOKEN_KEY) != null);
+  int lastLogin = prefs.getInt("lastLogin") ?? 0;
+  int now = DateTime.now().millisecondsSinceEpoch;
+  int diff = now - lastLogin;
+  int maxLoginLifeSpan = 3600 * 1000 * 2;
+  isLoggedIn = isLoggedIn && (diff < maxLoginLifeSpan);
+
+  return isLoggedIn;
+}
+
+Color hexToColor(String code) {
+  return new Color(int.parse(code.substring(0, 6), radix: 16) + 0xFF000000);
 }

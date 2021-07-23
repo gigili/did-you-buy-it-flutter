@@ -1,0 +1,1 @@
+class UnauthroziedException implements Exception {}

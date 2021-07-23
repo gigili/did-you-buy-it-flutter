@@ -1,5 +1,5 @@
-import 'package:did_you_buy_it/ui/screens/auth/login_screen.dart';
-import 'package:did_you_buy_it/ui/screens/auth/register_screen.dart';
+import 'package:did_you_buy_it/auth/screens/login_screen.dart';
+import 'package:did_you_buy_it/auth/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -14,17 +14,23 @@ class HomeScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Did You Buy It?"),
           bottom: TabBar(
+            indicatorColor: Colors.white60,
             tabs: [
               Tab(text: "Login"),
               Tab(text: "Register"),
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            LoginScreen(),
-            RegisterScreen(),
-          ],
+        body: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 800),
+            child: TabBarView(
+              children: [
+                LoginScreen(),
+                RegisterScreen(),
+              ],
+            ),
+          ),
         ),
       ),
     );
