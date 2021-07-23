@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:did_you_buy_it/list/exceptions/failed_loading_lists_exception.dart';
 import 'package:did_you_buy_it/list/exceptions/list_create_failed_exception.dart';
@@ -53,9 +54,7 @@ class ListApi {
     String? color,
   }) async {
     Map<String, dynamic> params = {"name": name};
-    if (color != null) {
-      params.addAll({"color": color});
-    }
+    if (color != null) params.addAll({"color": color});
 
     Response result = await callAPI(
       "/list",
@@ -125,5 +124,47 @@ class ListApi {
     }
 
     throw FailedLoadingListsException();
+  }
+
+  static Future<ListModel> updateList({
+    required String listID,
+    required String name,
+    required String token,
+    String? color,
+  }) async {
+    Map<String, String> params = {"name": name};
+    if (color != null) params.addAll({"color": color.toString()});
+
+    Response response = await callAPI(
+      "/list/$listID",
+      params: params,
+      requestMethod: RequestMethod.PATCH,
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    switch (response.statusCode) {
+      case 400:
+        throw FailedInputValidationException("list ID");
+
+      case 401:
+        throw InvalidTokenException();
+
+      case 403:
+        throw UnauthroziedException();
+
+      case 404:
+        throw ListNotFoundException();
+
+      case 200:
+        var res = jsonDecode(response.body);
+        return ListModel.fromMap(res["data"]);
+
+      default:
+        var res = jsonDecode(response.body);
+        String errorMessage = "There was an error while updating the list";
+        if (res["error"] != null && res["error"]["message"] != null)
+          errorMessage = res["error"]["message"];
+        throw Exception(errorMessage);
+    }
   }
 }

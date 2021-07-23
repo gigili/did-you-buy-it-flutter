@@ -1,6 +1,7 @@
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/list/models/list_model.dart';
 import 'package:did_you_buy_it/list/components/list_info_labels.dart';
+import 'package:did_you_buy_it/list/models/list_model.dart';
+import 'package:did_you_buy_it/list/screens/list_editing_screen.dart';
 import 'package:flutter/material.dart';
 
 class ListsViewTile extends StatelessWidget {
@@ -45,7 +46,17 @@ class ListsViewTile extends StatelessWidget {
                 ),
                 onSelected: (String value) {
                   switch (value) {
+                    case "EditList":
+                      Navigator.of(context).pushNamed(
+                        ListEditingScreen.routeName,
+                        arguments: {"list": item, "tab": "list"},
+                      );
+                      break;
                     case "ManageUsers":
+                      Navigator.of(context).pushNamed(
+                        ListEditingScreen.routeName,
+                        arguments: {"list": item, "tab": "list"},
+                      );
                       break;
                     case "DeleteList":
                       onDeleteList(item);

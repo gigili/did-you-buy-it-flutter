@@ -1,6 +1,5 @@
 import 'package:did_you_buy_it/list/components/list_info_label.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
-import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/material.dart';
 
 class ListInfoLabels extends StatelessWidget {

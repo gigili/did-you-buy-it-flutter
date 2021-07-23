@@ -1,5 +1,5 @@
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/list/forms/create_list_form.dart';
+import 'package:did_you_buy_it/list/forms/list_form.dart';
 import 'package:flutter/material.dart';
 
 class CreateListScreen extends StatelessWidget {
@@ -15,7 +15,7 @@ class CreateListScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(paddingMedium),
         child: Center(
-          child: CreateListForm(),
+          child: ListForm(),
         ),
       ),
     );
