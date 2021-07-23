@@ -60,7 +60,7 @@ class _ListItemsState extends State<ListItems> {
                       return item.image != null
                           ? ListItemTileWithImage(
                               item: item,
-                              color: list?.color,
+                              list: list!,
                             )
                           : ListItemTile(
                               item: item,

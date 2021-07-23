@@ -3,20 +3,19 @@ import 'dart:convert';
 import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/.env.dart';
+import 'package:did_you_buy_it/list/models/list_model.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
 import 'package:flutter/material.dart';
 
 class ListItemTileWithImage extends StatefulWidget {
   final ListItemModel item;
-  final String? strUsers;
-  final String? color;
+  final ListModel list;
 
   const ListItemTileWithImage({
     Key? key,
     required this.item,
-    this.strUsers,
-    this.color,
+    required this.list,
   }) : super(key: key);
 
   @override
@@ -32,7 +31,7 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
       title: Container(
         margin: EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: widget.color != null ? hexToColor(widget.color!) : Colors.blue,
+          color: widget.list.getListColor(),
           boxShadow: [
             BoxShadow(
               blurRadius: 3,
@@ -59,7 +58,9 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
                   children: [
                     Text(
                       widget.item.name,
-                      style: accentElementStyle,
+                      style: accentElementStyle.copyWith(
+                        color: widget.list.getFontColor(),
+                      ),
                     ),
                     if (widget.item.isRepeating) Icon(Icons.refresh)
                   ],
@@ -75,9 +76,17 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
                           SizedBox(height: 10),
                           Divider(color: Colors.grey[300], thickness: 2),
                           Text(
-                              "Bought on: ${formatDate(widget.item.purchasedAt!)}"),
+                            "Bought on: ${formatDate(widget.item.purchasedAt!)}",
+                            style: secondaryElementStyle.copyWith(
+                              color: widget.list.getFontColor(),
+                            ),
+                          ),
                           Text(
-                              "Bought by: ${getUserData(widget.item.purchasedUserID)}"),
+                            "Bought by: ${widget.item.purchaseName}",
+                            style: secondaryElementStyle.copyWith(
+                              color: widget.list.getFontColor(),
+                            ),
+                          ),
                         ],
                       ),
                     )
@@ -87,21 +96,5 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
         ),
       ),
     );
-  }
-
-  UserModel getUserData(String? userID) {
-    if (widget.strUsers == null) {
-      return UserModel(id: "", name: "", email: "", username: "");
-    }
-
-    if (users.length == 0) {
-      var usersJSON = jsonDecode(widget.strUsers!);
-      for (var item in usersJSON) {
-        var user = UserModel.fromMap(item);
-        users.add(user);
-      }
-    }
-
-    return users.firstWhere((user) => user.id == userID);
   }
 }

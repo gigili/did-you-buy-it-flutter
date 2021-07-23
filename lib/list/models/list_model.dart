@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:did_you_buy_it/auth/models/user_model.dart';
+import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
+import 'package:did_you_buy_it/utils/helpers.dart';
+import 'package:flutter/material.dart';
 
 class ListModel {
   String id;
@@ -59,5 +62,22 @@ class ListModel {
       items: items,
       color: data["color"] ?? null,
     );
+  }
+
+  @override
+  String toString() {
+    return this.name;
+  }
+
+  Color getListColor() {
+    return this.color != null ? hexToColor(this.color!) : DEFAULT_LIST_COLOR;
+  }
+
+  Color getFontColor() {
+    Color fontColor = this.getListColor().computeLuminance() > 0.5
+        ? Colors.black
+        : Colors.white;
+
+    return fontColor;
   }
 }

@@ -50,10 +50,16 @@ class ListApi {
   static Future<ListModel> createList({
     required String name,
     required String token,
+    String? color,
   }) async {
+    Map<String, dynamic> params = {"name": name};
+    if (color != null) {
+      params.addAll({"color": color});
+    }
+
     Response result = await callAPI(
       "/list",
-      params: {'name': name},
+      params: params,
       requestMethod: RequestMethod.POST,
       headers: {"Authorization": "Bearer $token"},
     );

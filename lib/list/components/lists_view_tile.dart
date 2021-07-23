@@ -1,7 +1,6 @@
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
-import 'package:did_you_buy_it/ui/widgets/list_info_labels.dart';
-import 'package:did_you_buy_it/utils/helpers.dart';
+import 'package:did_you_buy_it/list/components/list_info_labels.dart';
 import 'package:flutter/material.dart';
 
 class ListsViewTile extends StatelessWidget {
@@ -21,7 +20,7 @@ class ListsViewTile extends StatelessWidget {
       padding: EdgeInsets.all(paddingMedium),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: item.color != null ? hexToColor(item.color!) : Colors.blue,
+        color: item.getListColor(),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,6 +31,7 @@ class ListsViewTile extends StatelessWidget {
               Text(
                 this.item.name,
                 style: TextStyle(
+                  color: item.getFontColor(),
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -41,7 +41,7 @@ class ListsViewTile extends StatelessWidget {
                 elevation: 4,
                 child: Icon(
                   Icons.settings,
-                  color: Colors.white70,
+                  color: item.getFontColor(),
                 ),
                 onSelected: (String value) {
                   switch (value) {
@@ -53,6 +53,10 @@ class ListsViewTile extends StatelessWidget {
                   }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem(
+                    child: Text("Edit list"),
+                    value: "EditList",
+                  ),
                   const PopupMenuItem(
                     child: Text("Manage users"),
                     value: "ManagaUsers",

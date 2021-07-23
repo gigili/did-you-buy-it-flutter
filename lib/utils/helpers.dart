@@ -14,7 +14,8 @@ String hashStr(String str) {
 void showMsgDialog(BuildContext context,
     {String title = "Error",
     String message = "There was an error",
-    String closeButtonText = "Close"}) {
+    String closeButtonText = "Close",
+    Function? callBack}) {
   // flutter defined function
   showDialog(
     context: context,
@@ -29,6 +30,10 @@ void showMsgDialog(BuildContext context,
             child: new Text(closeButtonText),
             onPressed: () {
               Navigator.of(context).pop();
+
+              if (callBack != null) {
+                callBack();
+              }
             },
           ),
         ],
