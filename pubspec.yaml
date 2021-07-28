@@ -33,6 +33,7 @@ dependencies:
   shared_preferences: ^2.0.6
   intl: ^0.17.0
   flutter_circle_color_picker: ^0.3.0
+  flutter_riverpod: ^0.14.0+3
 
 dev_dependencies:
   flutter_test:

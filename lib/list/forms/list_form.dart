@@ -2,6 +2,7 @@ import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/api/list_api.dart';
 import 'package:did_you_buy_it/list/exceptions/list_not_found_exception.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
+import 'package:did_you_buy_it/list/provider/lists_provider.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
 import 'package:did_you_buy_it/utils/exceptions/invalid_token_exception.dart';
@@ -9,6 +10,7 @@ import 'package:did_you_buy_it/utils/exceptions/unauthorized_exception.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListForm extends StatefulWidget {
@@ -30,12 +32,17 @@ class _ListFormState extends State<ListForm> {
   ListModel? list;
 
   @override
-  void initState() {
+  void didChangeDependencies() {
     if (widget.list != null) {
       listNameController.text = widget.list!.name;
       colorController.color = widget.list!.getListColor();
       setCustomColor = true;
     }
+    super.didChangeDependencies();
+  }
+
+  @override
+  void initState() {
     super.initState();
   }
 
@@ -52,7 +59,7 @@ class _ListFormState extends State<ListForm> {
       child: Form(
         key: _formKey,
         child: apiCallInProgress
-            ? CircularProgressIndicator()
+            ? Center(child: CircularProgressIndicator())
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -128,14 +135,15 @@ class _ListFormState extends State<ListForm> {
           : null;
       ListModel list =
           await ListApi.createList(name: listName, token: token, color: color);
-      print("List Created");
+
+      context.read(listsProvider).addList(list, asFirst: true);
 
       showMsgDialog(
         context,
         title: "List created",
         message: "$listName was created successfully",
         callBack: () {
-          Navigator.of(context).pop<ListModel>(list);
+          Navigator.of(context).pop();
         },
       );
     } on InvalidTokenException catch (_) {
@@ -178,16 +186,19 @@ class _ListFormState extends State<ListForm> {
 
     try {
       ListModel result = await ListApi.updateList(
-        listID: list!.id,
+        listID: widget.list!.id,
         name: listNameController.text,
         color: color,
         token: token,
       );
 
-      setState(() {
-        widget.list!.name = result.name;
-        widget.list!.color = result.color;
-      });
+      showMsgDialog(
+        context,
+        title: "List updated",
+        message: "List updated successfully",
+      );
+
+      context.read(listsProvider).updateList(result);
     } on UnauthroziedException catch (_) {
       showMsgDialog(
         context,

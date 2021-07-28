@@ -1,17 +1,18 @@
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/exceptions/list_not_found_exception.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
+import 'package:did_you_buy_it/list/provider/lists_provider.dart';
 import 'package:did_you_buy_it/list_item/api/list_item_api.dart';
+import 'package:did_you_buy_it/list_item/components/list_item_header.dart';
 import 'package:did_you_buy_it/list_item/components/list_item_tile.dart';
 import 'package:did_you_buy_it/list_item/components/list_item_tile_with_image.dart';
+import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
 import 'package:did_you_buy_it/utils/exceptions/invalid_token_exception.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
-import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:did_you_buy_it/list_item/components/list_item_header.dart';
 
 class ListItems extends StatefulWidget {
   static String routeName = "/listDetails";
@@ -32,12 +33,18 @@ class _ListItemsState extends State<ListItems> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    list = ModalRoute.of(context)!.settings.arguments as ListModel;
+  void didChangeDependencies() {
+    var listItemIndex = ModalRoute.of(context)!.settings.arguments as int;
+    list = context.read(listsProvider).lists[listItemIndex];
+    //items = list?.items; TODO: Should we load items from the API every time?
     if (items == null && !isApiCallInProgress) {
       loadItems(list!.id);
     }
+    super.didChangeDependencies();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(APP_NAME)),
       body: isApiCallInProgress
@@ -83,6 +90,8 @@ class _ListItemsState extends State<ListItems> {
     String token = prefs.getString(ACCESS_TOKEN_KEY)!;
     if (isApiCallInProgress) return;
 
+    print("Loading list items...");
+
     setState(() {
       isApiCallInProgress = true;
     });
@@ -94,6 +103,8 @@ class _ListItemsState extends State<ListItems> {
       setState(() {
         items = _items;
       });
+      list!.items = _items;
+      context.read(listsProvider).updateList(list!);
     } on ListNotFoundException catch (_) {
       Navigator.of(context).pop<ListModel>(list);
     } on InvalidTokenException catch (_) {} catch (_) {
