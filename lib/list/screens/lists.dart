@@ -58,8 +58,7 @@ class _ListsScreenState extends State<ListsScreen> {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 800),
           child: Consumer(
-            builder: (BuildContext context,
-                T Function<T>(ProviderBase<Object?, T>) watch, Widget? child) {
+            builder: (BuildContext context, watch, Widget? child) {
               var lists = watch(listsProvider).lists;
               return ListView.builder(
                 itemCount: lists.length,
@@ -72,7 +71,7 @@ class _ListsScreenState extends State<ListsScreen> {
                     title: ListsViewTile(
                       item: lists[index],
                       onDeleteList: (ListModel itemToDelete) {
-                        deleteList(itemToDelete);
+                        confirmListDeletion(itemToDelete);
                       },
                     ),
                     onTap: () {
@@ -122,11 +121,46 @@ class _ListsScreenState extends State<ListsScreen> {
         title: "Error loading lists",
         message: "There was an error while loading lists",
       );
+      loadMore = false;
     }
   }
 
+  void confirmListDeletion(ListModel itemToDelete) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Confirm deletion"),
+          content: new Text(
+            "Are you sure you want to delete ${itemToDelete.name} list?",
+          ),
+          actions: <Widget>[
+            new ElevatedButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.red,
+                // padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                // textStyle: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+              child: new Text("Yes"),
+              onPressed: () {
+                deleteList(itemToDelete);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void deleteList(ListModel itemToDelete) async {
-    //TODO: Add a confirmation dialog here first
     if (prefs == null) {
       prefs = await SharedPreferences.getInstance();
     }
