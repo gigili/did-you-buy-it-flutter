@@ -2,6 +2,7 @@ import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/api/list_api.dart';
 import 'package:did_you_buy_it/list/exceptions/list_not_found_exception.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
+import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:did_you_buy_it/list/provider/lists_provider.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
@@ -14,8 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListForm extends StatefulWidget {
-  final ListModel? list;
-  const ListForm({Key? key, this.list}) : super(key: key);
+  const ListForm({Key? key}) : super(key: key);
 
   @override
   _ListFormState createState() => _ListFormState();
@@ -33,9 +33,9 @@ class _ListFormState extends State<ListForm> {
 
   @override
   void didChangeDependencies() {
-    if (widget.list != null) {
-      listNameController.text = widget.list!.name;
-      colorController.color = widget.list!.getListColor();
+    if (list != null) {
+      listNameController.text = list!.name;
+      colorController.color = list!.getListColor();
       setCustomColor = true;
     }
     super.didChangeDependencies();
@@ -43,6 +43,7 @@ class _ListFormState extends State<ListForm> {
 
   @override
   void initState() {
+    list = context.read(listProvider).list;
     super.initState();
   }
 
@@ -105,11 +106,11 @@ class _ListFormState extends State<ListForm> {
                     ),
                   SizedBox(height: 20),
                   RoundedButtonWidget(
-                    label: widget.list == null ? "Create list" : "Update list",
+                    label: list == null ? "Create list" : "Update list",
                     onPress: () {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
-                        widget.list == null ? createList() : updateList();
+                        list == null ? createList() : updateList();
                       }
                     },
                   ),
@@ -170,7 +171,7 @@ class _ListFormState extends State<ListForm> {
   }
 
   void updateList() async {
-    if (widget.list == null) return;
+    if (list == null) return;
 
     setState(() {
       apiCallInProgress = true;
@@ -186,7 +187,7 @@ class _ListFormState extends State<ListForm> {
 
     try {
       ListModel result = await ListApi.updateList(
-        listID: widget.list!.id,
+        listID: list!.id,
         name: listNameController.text,
         color: color,
         token: token,
@@ -199,6 +200,7 @@ class _ListFormState extends State<ListForm> {
       );
 
       context.read(listsProvider).updateList(result);
+      context.read(listProvider).setList(result);
     } on UnauthroziedException catch (_) {
       showMsgDialog(
         context,

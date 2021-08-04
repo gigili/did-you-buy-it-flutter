@@ -1,10 +1,11 @@
 import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/list/components/list_user_list_component.dart';
 import 'package:did_you_buy_it/list/forms/list_form.dart';
-import 'package:did_you_buy_it/list/models/list_model.dart';
 import 'package:flutter/material.dart';
 
 class ListEditingScreen extends StatefulWidget {
   static String routeName = "/edit-list";
+
   ListEditingScreen({Key? key}) : super(key: key);
 
   @override
@@ -12,7 +13,6 @@ class ListEditingScreen extends StatefulWidget {
 }
 
 class _ListEditingScreenState extends State<ListEditingScreen> {
-  ListModel? list;
   String tab = "list";
 
   @override
@@ -21,7 +21,6 @@ class _ListEditingScreenState extends State<ListEditingScreen> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
 
     if (args != null) {
-      list = args["list"] as ListModel;
       tab = args["tab"] as String;
     }
     super.didChangeDependencies();
@@ -31,7 +30,7 @@ class _ListEditingScreenState extends State<ListEditingScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      initialIndex: 0,
+      initialIndex: tab == "list" ? 0 : 1,
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Edit list"),
@@ -51,11 +50,11 @@ class _ListEditingScreenState extends State<ListEditingScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(paddingMedium),
-                  child: ListForm(list: this.list),
+                  child: ListForm(),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(paddingMedium),
-                  child: ListForm(),
+                  child: ListUserList(),
                 ),
               ],
             ),

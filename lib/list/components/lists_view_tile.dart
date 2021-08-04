@@ -1,8 +1,10 @@
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/components/list_info_labels.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
+import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:did_you_buy_it/list/screens/list_editing_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ListsViewTile extends StatelessWidget {
   final ListModel item;
@@ -47,15 +49,17 @@ class ListsViewTile extends StatelessWidget {
                 onSelected: (String value) {
                   switch (value) {
                     case "EditList":
+                      context.read(listProvider).setList(item);
                       Navigator.of(context).pushNamed(
                         ListEditingScreen.routeName,
-                        arguments: {"list": item, "tab": "list"},
+                        arguments: {"tab": "list"},
                       );
                       break;
                     case "ManageUsers":
+                      context.read(listProvider).setList(item);
                       Navigator.of(context).pushNamed(
                         ListEditingScreen.routeName,
-                        arguments: {"list": item, "tab": "list"},
+                        arguments: {"tab": "list"},
                       );
                       break;
                     case "DeleteList":

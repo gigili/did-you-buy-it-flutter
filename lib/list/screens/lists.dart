@@ -2,6 +2,7 @@ import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/api/list_api.dart';
 import 'package:did_you_buy_it/list/components/lists_view_tile.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
+import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:did_you_buy_it/list/provider/lists_provider.dart';
 import 'package:did_you_buy_it/list/screens/create_list_screen.dart';
 import 'package:did_you_buy_it/list_item/screens/list_items.dart';
@@ -66,8 +67,8 @@ class _ListsScreenState extends State<ListsScreen> {
               else
                 return ListView.builder(
                   itemCount: lists.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index >= (lists.length - 1)) {
+                  itemBuilder: (BuildContext ctx, int index) {
+                    if (!isLoadInProgress && index >= (lists.length - 1)) {
                       loadLists();
                     }
 
@@ -79,7 +80,7 @@ class _ListsScreenState extends State<ListsScreen> {
                         },
                       ),
                       onTap: () {
-                        viewList(index);
+                        viewList(lists[index]);
                       },
                     );
                   },
@@ -98,8 +99,9 @@ class _ListsScreenState extends State<ListsScreen> {
     );
   }
 
-  void viewList(int index) {
-    Navigator.of(context).pushNamed(ListItems.routeName, arguments: index);
+  void viewList(ListModel list) {
+    context.read(listProvider).setList(list);
+    Navigator.of(context).pushNamed(ListItems.routeName);
   }
 
   void loadLists({int limit = 10}) async {

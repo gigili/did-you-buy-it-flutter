@@ -1,6 +1,7 @@
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/exceptions/list_not_found_exception.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
+import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:did_you_buy_it/list/provider/lists_provider.dart';
 import 'package:did_you_buy_it/list_item/api/list_item_api.dart';
 import 'package:did_you_buy_it/list_item/components/list_item_header.dart';
@@ -34,12 +35,16 @@ class _ListItemsState extends State<ListItems> {
 
   @override
   void didChangeDependencies() {
-    var listItemIndex = ModalRoute.of(context)!.settings.arguments as int;
-    list = context.read(listsProvider).lists[listItemIndex];
+    list = context.read(listProvider).list;
     //items = list?.items; TODO: Should we load items from the API every time?
+    if (list == null) {
+      Navigator.of(context).pop();
+    }
+
     if (items == null && !isApiCallInProgress) {
       loadItems(list!.id);
     }
+
     super.didChangeDependencies();
   }
 
