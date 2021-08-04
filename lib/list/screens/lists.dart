@@ -60,26 +60,30 @@ class _ListsScreenState extends State<ListsScreen> {
           child: Consumer(
             builder: (BuildContext context, watch, Widget? child) {
               var lists = watch(listsProvider).lists;
-              return ListView.builder(
-                itemCount: lists.length,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index >= (lists.length - 1)) {
-                    loadLists();
-                  }
+              var isLoadInProgress = watch(listsProvider).isLoading;
+              if (isLoadInProgress)
+                return CircularProgressIndicator();
+              else
+                return ListView.builder(
+                  itemCount: lists.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index >= (lists.length - 1)) {
+                      loadLists();
+                    }
 
-                  return ListTile(
-                    title: ListsViewTile(
-                      item: lists[index],
-                      onDeleteList: (ListModel itemToDelete) {
-                        confirmListDeletion(itemToDelete);
+                    return ListTile(
+                      title: ListsViewTile(
+                        item: lists[index],
+                        onDeleteList: (ListModel itemToDelete) {
+                          confirmListDeletion(itemToDelete);
+                        },
+                      ),
+                      onTap: () {
+                        viewList(index);
                       },
-                    ),
-                    onTap: () {
-                      viewList(index);
-                    },
-                  );
-                },
-              );
+                    );
+                  },
+                );
             },
           ),
         ),
@@ -100,19 +104,20 @@ class _ListsScreenState extends State<ListsScreen> {
 
   void loadLists({int limit = 10}) async {
     if (!loadMore) return;
-
     if (prefs == null) {
       prefs = await SharedPreferences.getInstance();
     }
 
+    var state = context.read(listsProvider);
+
     String? token = prefs!.getString(ACCESS_TOKEN_KEY);
     if (token == null) return;
-
     try {
+      state.setLoadingState(loadingState: true);
       List<ListModel> result =
           await ListApi.getLists(page: listsPage, token: token, limit: limit);
       listsPage++;
-      context.read(listsProvider).addLists(result);
+      state.addLists(result);
     } on NoMoreResultsException catch (_) {
       loadMore = false;
     } catch (_) {
@@ -122,6 +127,8 @@ class _ListsScreenState extends State<ListsScreen> {
         message: "There was an error while loading lists",
       );
       loadMore = false;
+    } finally {
+      state.setLoadingState(loadingState: false);
     }
   }
 
@@ -143,11 +150,7 @@ class _ListsScreenState extends State<ListsScreen> {
               },
             ),
             new ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.red,
-                // padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                // textStyle: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
+              style: ElevatedButton.styleFrom(primary: Colors.red),
               child: new Text("Yes"),
               onPressed: () {
                 deleteList(itemToDelete);
@@ -168,6 +171,8 @@ class _ListsScreenState extends State<ListsScreen> {
     String? token = prefs!.getString(ACCESS_TOKEN_KEY);
     if (token == null) return;
 
+    var state = context.read(listsProvider);
+    state.setLoadingState(loadingState: true);
     try {
       await ListApi.deleteList(list: itemToDelete, token: token);
       showMsgDialog(
@@ -175,13 +180,15 @@ class _ListsScreenState extends State<ListsScreen> {
         title: "List deleted",
         message: "${itemToDelete.name} was deleted successfully",
       );
-      context.read(listsProvider).deleteList(itemToDelete);
+      state.deleteList(itemToDelete);
     } catch (_) {
       showMsgDialog(
         context,
         title: "Error deleting a list",
         message: "Unable to delete a list",
       );
+    } finally {
+      state.setLoadingState(loadingState: false);
     }
   }
 }
