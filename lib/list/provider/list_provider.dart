@@ -11,6 +11,6 @@ class ListProvider extends ChangeNotifier {
 
   void setList(ListModel? list) {
     _list = list;
-    //notifyListeners();
+    notifyListeners();
   }
 }

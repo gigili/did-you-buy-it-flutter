@@ -1,5 +1,5 @@
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/list/components/list_user_list_component.dart';
+import 'package:did_you_buy_it/list/components/list_users_component.dart';
 import 'package:did_you_buy_it/list/forms/list_form.dart';
 import 'package:flutter/material.dart';
 
@@ -52,10 +52,7 @@ class _ListEditingScreenState extends State<ListEditingScreen> {
                   padding: const EdgeInsets.all(paddingMedium),
                   child: ListForm(),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(paddingMedium),
-                  child: ListUserList(),
-                ),
+                ListUsersComponent(),
               ],
             ),
           ),

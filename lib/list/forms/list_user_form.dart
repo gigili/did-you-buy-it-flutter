@@ -1,75 +1,95 @@
+import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/list/api/list_user_api.dart';
+import 'package:did_you_buy_it/list/components/list_user_tile.dart';
+import 'package:did_you_buy_it/list/provider/list_provider.dart';
+import 'package:did_you_buy_it/list/provider/lists_provider.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ListUserForm extends StatefulWidget {
-  const ListUserForm({Key? key}) : super(key: key);
-
-  @override
-  _ListUserFormState createState() => _ListUserFormState();
-}
-
-class _ListUserFormState extends State<ListUserForm> {
-  GlobalKey<FormState> _key = GlobalKey();
-  TextEditingController listUserController = TextEditingController();
-
-  @override
-  void dispose() {
-    listUserController.dispose();
-    super.dispose();
-  }
-
+class ListUserForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _key,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            flex: 7,
-            child: TextFormField(
-              controller: listUserController,
-              decoration: defaultInputDecoration(
-                "Username/Name/Email",
-                "Search for a user",
-              ),
-              validator: (value) {
-                if (value == null || value.trim().length == 0) {
-                  return "Search value can't be empty";
-                }
-
-                return null;
-              },
-            ),
+    return Padding(
+      padding: const EdgeInsets.all(paddingMedium),
+      child: TypeAheadField(
+        textFieldConfiguration: TextFieldConfiguration(
+          autofocus: false,
+          style: DefaultTextStyle.of(context)
+              .style
+              .copyWith(fontStyle: FontStyle.italic),
+          decoration: defaultInputDecoration(
+            "Name/Username/Email",
+            "Search for a user",
           ),
-          Spacer(flex: 1),
-          Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(paddingSmall),
-            ),
-            child: IconButton(
-              splashColor: Theme.of(context).accentColor,
-              splashRadius: paddingLarge,
-              onPressed: () {
-                if (_key.currentState!.validate()) {
-                  _key.currentState!.save();
+        ),
+        suggestionsCallback: (pattern) async {
+          try {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            String? token = prefs.getString(ACCESS_TOKEN_KEY);
 
-                  showMsgDialog(
-                    context,
-                    message: "//TODO NOT IMPLEMENTED",
-                  );
-                }
-              },
-              icon: Icon(Icons.search),
-            ),
-          ),
-        ],
+            if (token == null) return [];
+            if (pattern.isEmpty || pattern.length < 3) return [];
+
+            return await ListUserApi.findUser(pattern.toString(), token: token);
+          } catch (e) {
+            return [e.toString()];
+          }
+        },
+        itemBuilder: (context, dynamic user) {
+          if (user is String) {
+            return Text(user);
+          }
+
+          var users = context.read(listProvider).list?.users;
+          var owner = users?.firstWhere((element) => element.owner == 1);
+          return Padding(
+            padding: const EdgeInsets.all(paddingSmall),
+            child: ListUserTile(user: user, owner: owner),
+          );
+        },
+        onSuggestionSelected: (dynamic suggestion) {
+          addUserToList(suggestion as UserModel, context);
+        },
       ),
     );
+  }
+
+  void addUserToList(UserModel user, BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString(ACCESS_TOKEN_KEY);
+
+    if (token == null) return;
+    try {
+      var list = context.read(listProvider).list;
+      if (list == null) return;
+
+      UserModel newUser = await ListUserApi.addUserToList(
+        listID: list.id,
+        userID: user.id,
+        token: token,
+      );
+
+      showMsgDialog(
+        context,
+        title: "User added",
+        message: "User ${user.name} added successfully to the list",
+      );
+
+      list.users?.add(newUser);
+      list.countUsers += 1;
+
+      context.read(listProvider).setList(list);
+      context.read(listsProvider).updateList(list);
+    } catch (_) {
+      showMsgDialog(
+        context,
+        message: "Failed to add user ${user.name} to the list",
+      );
+    }
   }
 }

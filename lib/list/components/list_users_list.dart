@@ -1,6 +1,7 @@
 import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/api/list_user_api.dart';
+import 'package:did_you_buy_it/list/components/list_user_tile.dart';
 import 'package:did_you_buy_it/list/exceptions/list_not_found_exception.dart';
 import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:did_you_buy_it/list/provider/lists_provider.dart';
@@ -27,7 +28,36 @@ class _ListUsersListState extends State<ListUsersList> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("List of list users goes here"));
+    return Consumer(
+      builder: (BuildContext context, watch, Widget? child) {
+        var list = watch(listProvider).list;
+        return ListView.separated(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          separatorBuilder: (BuildContext context, int index) => Divider(
+            color: Theme.of(context).accentColor,
+            height: paddingMedium,
+          ),
+          itemCount: (list?.users?.length ?? 0),
+          itemBuilder: (context, index) {
+            var user = list!.users![index];
+            UserModel? owner =
+                list.users!.firstWhere((element) => element.owner == 1);
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: paddingMedium,
+                vertical: 8,
+              ),
+              child: ListUserTile(
+                user: user,
+                owner: owner,
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void loadListUsers() async {

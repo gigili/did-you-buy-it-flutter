@@ -62,29 +62,26 @@ class _ListsScreenState extends State<ListsScreen> {
             builder: (BuildContext context, watch, Widget? child) {
               var lists = watch(listsProvider).lists;
               var isLoadInProgress = watch(listsProvider).isLoading;
-              if (isLoadInProgress)
-                return CircularProgressIndicator();
-              else
-                return ListView.builder(
-                  itemCount: lists.length,
-                  itemBuilder: (BuildContext ctx, int index) {
-                    if (!isLoadInProgress && index >= (lists.length - 1)) {
-                      loadLists();
-                    }
+              return ListView.builder(
+                itemCount: lists.length,
+                itemBuilder: (BuildContext ctx, int index) {
+                  if (!isLoadInProgress && index >= (lists.length - 1)) {
+                    loadLists();
+                  }
 
-                    return ListTile(
-                      title: ListsViewTile(
-                        item: lists[index],
-                        onDeleteList: (ListModel itemToDelete) {
-                          confirmListDeletion(itemToDelete);
-                        },
-                      ),
-                      onTap: () {
-                        viewList(lists[index]);
+                  return ListTile(
+                    title: ListsViewTile(
+                      item: lists[index],
+                      onDeleteList: (ListModel itemToDelete) {
+                        confirmListDeletion(itemToDelete);
                       },
-                    );
-                  },
-                );
+                    ),
+                    onTap: () {
+                      viewList(lists[index]);
+                    },
+                  );
+                },
+              );
             },
           ),
         ),

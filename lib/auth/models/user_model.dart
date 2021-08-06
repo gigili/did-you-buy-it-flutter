@@ -5,6 +5,7 @@ class UserModel {
   String username;
   String? image;
   String? status;
+  int owner;
 
   UserModel({
     required this.id,
@@ -13,6 +14,7 @@ class UserModel {
     required this.username,
     this.image,
     this.status,
+    this.owner = 0,
   });
 
   factory UserModel.fromMap(Map data) {
@@ -21,6 +23,8 @@ class UserModel {
       name: data["name"],
       email: data["email"],
       username: data["username"],
+      image: data["image"] ?? null,
+      owner: data["owner"] ?? 0,
     );
   }
 
