@@ -5,8 +5,9 @@ import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:did_you_buy_it/list/screens/list_editing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ListsViewTile extends StatelessWidget {
+class ListsViewTile extends StatefulWidget {
   final ListModel item;
   final Function(ListModel item) onDeleteList;
 
@@ -17,13 +18,27 @@ class ListsViewTile extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ListsViewTileState createState() => _ListsViewTileState();
+}
+
+class _ListsViewTileState extends State<ListsViewTile> {
+  String sessionUserID = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    setSessionUserID();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 20),
       padding: EdgeInsets.all(paddingMedium),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: item.getListColor(),
+        color: widget.item.getListColor(),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,9 +47,9 @@ class ListsViewTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                this.item.name,
+                this.widget.item.name,
                 style: TextStyle(
-                  color: item.getFontColor(),
+                  color: widget.item.getFontColor(),
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -44,26 +59,26 @@ class ListsViewTile extends StatelessWidget {
                 elevation: 4,
                 child: Icon(
                   Icons.settings,
-                  color: item.getFontColor(),
+                  color: widget.item.getFontColor(),
                 ),
                 onSelected: (String value) {
                   switch (value) {
                     case "EditList":
-                      context.read(listProvider).setList(item);
+                      context.read(listProvider).setList(widget.item);
                       Navigator.of(context).pushNamed(
                         ListEditingScreen.routeName,
                         arguments: {"tab": "list"},
                       );
                       break;
                     case "ManageUsers":
-                      context.read(listProvider).setList(item);
+                      context.read(listProvider).setList(widget.item);
                       Navigator.of(context).pushNamed(
                         ListEditingScreen.routeName,
-                        arguments: {"tab": "list"},
+                        arguments: {"tab": "user"},
                       );
                       break;
                     case "DeleteList":
-                      onDeleteList(item);
+                      widget.onDeleteList(widget.item);
                       break;
                   }
                 },
@@ -74,20 +89,26 @@ class ListsViewTile extends StatelessWidget {
                   ),
                   const PopupMenuItem(
                     child: Text("Manage users"),
-                    value: "ManagaUsers",
+                    value: "ManageUsers",
                   ),
-                  const PopupMenuItem(
-                    child: Text("Delete list"),
-                    value: "DeleteList",
-                  ),
+                  if (sessionUserID == widget.item.userID)
+                    const PopupMenuItem(
+                      child: Text("Delete list"),
+                      value: "DeleteList",
+                    ),
                 ],
               ),
             ],
           ),
           SizedBox(height: 20),
-          ListInfoLabels(list: this.item),
+          ListInfoLabels(list: this.widget.item),
         ],
       ),
     );
+  }
+
+  void setSessionUserID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    sessionUserID = prefs.getString("user_id") ?? "";
   }
 }

@@ -89,6 +89,7 @@ class _ListsScreenState extends State<ListsScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue[800],
         onPressed: () {
+          context.read(listProvider).setList(null);
           Navigator.of(context).pushNamed(CreateListScreen.routeName);
         },
         child: Icon(Icons.add),

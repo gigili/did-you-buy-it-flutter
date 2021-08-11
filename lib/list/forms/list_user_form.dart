@@ -4,6 +4,7 @@ import 'package:did_you_buy_it/list/api/list_user_api.dart';
 import 'package:did_you_buy_it/list/components/list_user_tile.dart';
 import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:did_you_buy_it/list/provider/lists_provider.dart';
+import 'package:did_you_buy_it/ui/widgets/type_ahead_field_no_data.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +12,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ListUserForm extends StatelessWidget {
+class ListUserForm extends StatefulWidget {
+  @override
+  _ListUserFormState createState() => _ListUserFormState();
+}
+
+class _ListUserFormState extends State<ListUserForm> {
+  TextEditingController autoCompleteController = TextEditingController();
+
+  @override
+  void dispose() {
+    autoCompleteController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(paddingMedium),
       child: TypeAheadField(
+        noItemsFoundBuilder: (context) =>
+            TypeAheadFieldNoData(label: "No Users Found!"),
         textFieldConfiguration: TextFieldConfiguration(
           autofocus: false,
+          controller: autoCompleteController,
           style: DefaultTextStyle.of(context)
               .style
               .copyWith(fontStyle: FontStyle.italic),
@@ -85,6 +102,8 @@ class ListUserForm extends StatelessWidget {
 
       context.read(listProvider).setList(list);
       context.read(listsProvider).updateList(list);
+
+      autoCompleteController.text = "";
     } catch (_) {
       showMsgDialog(
         context,

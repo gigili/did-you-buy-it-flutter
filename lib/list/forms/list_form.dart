@@ -30,6 +30,7 @@ class _ListFormState extends State<ListForm> {
   bool setCustomColor = false;
   bool apiCallInProgress = false;
   ListModel? list;
+  String? sessionUserID;
 
   @override
   void didChangeDependencies() {
@@ -44,6 +45,7 @@ class _ListFormState extends State<ListForm> {
   @override
   void initState() {
     list = context.read(listProvider).list;
+    setSessionUserID();
     super.initState();
   }
 
@@ -65,6 +67,7 @@ class _ListFormState extends State<ListForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextFormField(
+                    enabled: sessionUserID == list?.userID,
                     controller: listNameController,
                     decoration:
                         defaultInputDecoration("List name", "List name"),
@@ -227,5 +230,10 @@ class _ListFormState extends State<ListForm> {
         apiCallInProgress = false;
       });
     }
+  }
+
+  void setSessionUserID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    sessionUserID = prefs.getString("user_id");
   }
 }
