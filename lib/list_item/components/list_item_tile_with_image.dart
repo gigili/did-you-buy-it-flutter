@@ -1,9 +1,10 @@
+import 'package:did_you_buy_it/.env.dart';
 import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/.env.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
-import 'package:did_you_buy_it/utils/helpers.dart';
+import 'package:did_you_buy_it/list_item/forms/list_item_form.dart';
 import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
+import 'package:did_you_buy_it/utils/helpers.dart';
 import 'package:flutter/material.dart';
 
 class ListItemTileWithImage extends StatefulWidget {
@@ -26,6 +27,12 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onLongPress: () {
+        Navigator.of(context).pushNamed(ListItemForm.route_name, arguments: {
+          "listID": widget.list.id,
+          "item": widget.item,
+        });
+      },
       title: Container(
         margin: EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
@@ -60,7 +67,11 @@ class _ListItemTileWithImageState extends State<ListItemTileWithImage> {
                         color: widget.list.getFontColor(),
                       ),
                     ),
-                    if (widget.item.isRepeating) Icon(Icons.refresh)
+                    if (widget.item.isRepeating)
+                      Icon(
+                        Icons.refresh,
+                        color: widget.list.getFontColor(),
+                      )
                   ],
                 ),
               ),

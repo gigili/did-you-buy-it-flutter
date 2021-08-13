@@ -7,6 +7,7 @@ import 'package:did_you_buy_it/list_item/api/list_item_api.dart';
 import 'package:did_you_buy_it/list_item/components/list_item_header.dart';
 import 'package:did_you_buy_it/list_item/components/list_item_tile.dart';
 import 'package:did_you_buy_it/list_item/components/list_item_tile_with_image.dart';
+import 'package:did_you_buy_it/list_item/forms/list_item_form.dart';
 import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
 import 'package:did_you_buy_it/utils/exceptions/invalid_token_exception.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
@@ -54,37 +55,42 @@ class _ListItemsState extends State<ListItems> {
       appBar: AppBar(title: Text(APP_NAME)),
       body: isApiCallInProgress
           ? Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                children: [
-                  ListItemHeader(list: list!),
-                  SizedBox(height: 20),
-                  ...List.generate(
-                    list!.countItems,
-                    (index) {
-                      if (items == null || items!.isEmpty) {
-                        return SizedBox();
-                      }
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
+                  children: [
+                    ListItemHeader(list: list!),
+                    SizedBox(height: 20),
+                    ...List.generate(
+                      list!.countItems,
+                      (index) {
+                        if (items == null || items!.isEmpty) {
+                          return SizedBox();
+                        }
 
-                      ListItemModel? item = items!.elementAt(index);
+                        ListItemModel? item = items!.elementAt(index);
 
-                      return item.image != null
-                          ? ListItemTileWithImage(
-                              item: item,
-                              list: list!,
-                            )
-                          : ListItemTile(
-                              item: item,
-                              color: list?.color,
-                            );
-                    },
-                  ),
-                ],
+                        return item.image != null
+                            ? ListItemTileWithImage(
+                                item: item,
+                                list: list!,
+                              )
+                            : ListItemTile(item: item, list: list!);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        backgroundColor: Colors.blue[800],
+        foregroundColor: Colors.white70,
+        onPressed: () {
+          Navigator.of(context).pushNamed(ListItemForm.route_name, arguments: {
+            "listID": list?.id,
+          });
+        },
         child: Icon(Icons.add),
       ),
     );
@@ -94,8 +100,6 @@ class _ListItemsState extends State<ListItems> {
     var prefs = await SharedPreferences.getInstance();
     String token = prefs.getString(ACCESS_TOKEN_KEY)!;
     if (isApiCallInProgress) return;
-
-    print("Loading list items...");
 
     setState(() {
       isApiCallInProgress = true;
