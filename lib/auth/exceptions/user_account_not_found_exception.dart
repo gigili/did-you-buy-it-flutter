@@ -1,0 +1,1 @@
+class UserAccountNotFoundException implements Exception {}

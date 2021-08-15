@@ -1,4 +1,4 @@
-# Fix, Todo, Changelog notes
+# Notes
 
 ## 13.08.2021
 
@@ -10,7 +10,7 @@
             * [x] When editing the item
         * [ ] Delete item
         * [ ] Mark as bought
-    * [ ] Password reset screen fix API call and response
+    * [x] Password reset screen fix API call and response
     
 ## 11.08.2021
 

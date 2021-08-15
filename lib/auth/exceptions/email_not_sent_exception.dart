@@ -1,0 +1,1 @@
+class EmailNotSentException implements Exception {}
