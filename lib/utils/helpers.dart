@@ -42,6 +42,55 @@ void showMsgDialog(BuildContext context,
   );
 }
 
+void showConfirmationDialog(
+  BuildContext context, {
+  required String title,
+  required String content,
+  String positiveActionLabel = "Yes",
+  bool positiveButtonAccent = false,
+  Function? positiveCallback,
+  String negativeActionLabel = "No",
+  Function? negativeCallback,
+  bool negativeButtonAccent = false,
+}) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        title: new Text(title),
+        content: new Text(content),
+        actions: <Widget>[
+          new ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: positiveButtonAccent ? Colors.red : Colors.white,
+            ),
+            child: new Text(positiveActionLabel),
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (positiveCallback != null) {
+                positiveCallback();
+              }
+            },
+          ),
+          new ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: negativeButtonAccent ? Colors.red : Colors.white,
+            ),
+            child: new Text(negativeActionLabel),
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (negativeCallback != null) {
+                negativeCallback();
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 String formatDate(String dateTime, {DateFormat? format}) {
   if (format == null) {
     format = DateFormat.yMd("en_US");

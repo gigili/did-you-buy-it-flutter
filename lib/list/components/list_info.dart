@@ -2,10 +2,10 @@ import 'package:did_you_buy_it/list/components/list_info_label.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
 import 'package:flutter/material.dart';
 
-class ListInfoLabels extends StatelessWidget {
+class ListInfo extends StatelessWidget {
   final ListModel list;
 
-  const ListInfoLabels({Key? key, required this.list}) : super(key: key);
+  const ListInfo({Key? key, required this.list}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class ListInfoLabels extends StatelessWidget {
           isPrimary: true,
         ),
         ListInfoLabel(
-          label: list.countItems.toString(),
+          label: list.cntItems.toString(),
           fontColor: list.getFontColor(),
         ),
         ListInfoLabel(
@@ -27,7 +27,7 @@ class ListInfoLabels extends StatelessWidget {
           isPrimary: true,
         ),
         ListInfoLabel(
-          label: list.countUsers.toString(),
+          label: list.cntUsers.toString(),
           fontColor: list.getFontColor(),
         ),
         ListInfoLabel(

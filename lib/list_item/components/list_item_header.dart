@@ -1,6 +1,6 @@
 import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/list/components/list_info.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
-import 'package:did_you_buy_it/list/components/list_info_labels.dart';
 import 'package:flutter/material.dart';
 
 class ListItemHeader extends StatelessWidget {
@@ -32,7 +32,7 @@ class ListItemHeader extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20),
-          ListInfoLabels(list: list),
+          ListInfo(list: list),
         ],
       ),
     );

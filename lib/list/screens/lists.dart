@@ -134,32 +134,13 @@ class _ListsScreenState extends State<ListsScreen> {
   }
 
   void confirmListDeletion(ListModel itemToDelete) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("Confirm deletion"),
-          content: new Text(
-            "Are you sure you want to delete ${itemToDelete.name} list?",
-          ),
-          actions: <Widget>[
-            new ElevatedButton(
-              child: new Text("No"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            new ElevatedButton(
-              style: ElevatedButton.styleFrom(primary: Colors.red),
-              child: new Text("Yes"),
-              onPressed: () {
-                deleteList(itemToDelete);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
+    showConfirmationDialog(
+      context,
+      title: "Confirm deletion",
+      content: "Are you sure you want to delete ${itemToDelete.name} list?",
+      positiveButtonAccent: true,
+      positiveCallback: () {
+        deleteList(itemToDelete);
       },
     );
   }

@@ -37,7 +37,6 @@ class _ListItemsState extends State<ListItems> {
   @override
   void didChangeDependencies() {
     list = context.read(listProvider).list;
-    //items = list?.items; TODO: Should we load items from the API every time?
     if (list == null) {
       Navigator.of(context).pop();
     }
@@ -63,7 +62,7 @@ class _ListItemsState extends State<ListItems> {
                     ListItemHeader(list: list!),
                     SizedBox(height: 20),
                     ...List.generate(
-                      list!.countItems,
+                      list!.cntItems,
                       (index) {
                         if (items == null || items!.isEmpty) {
                           return SizedBox();
@@ -72,11 +71,8 @@ class _ListItemsState extends State<ListItems> {
                         ListItemModel? item = items!.elementAt(index);
 
                         return item.image != null
-                            ? ListItemTileWithImage(
-                                item: item,
-                                list: list!,
-                              )
-                            : ListItemTile(item: item, list: list!);
+                            ? ListItemTileWithImage(item: item)
+                            : ListItemTile(item: item);
                       },
                     ),
                   ],
