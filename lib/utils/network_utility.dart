@@ -34,7 +34,7 @@ Future<http.Response> callAPI(
   }
 }
 
-Future<http.StreamedResponse> callAPIFileUpload(
+Future<http.Response> callAPIFileUpload(
   String url, {
   Map<String, String>? params,
   Map<String, String>? headers,
@@ -64,5 +64,6 @@ Future<http.StreamedResponse> callAPIFileUpload(
   if (headers != null) request.headers.addAll(headers);
 
   request.files.add(await http.MultipartFile.fromPath(file.name, file.path));
-  return await request.send();
+  http.StreamedResponse response = await request.send();
+  return await http.Response.fromStream(response);
 }

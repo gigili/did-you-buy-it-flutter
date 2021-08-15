@@ -16,15 +16,39 @@ class ListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addItems(List<ListItemModel> items) {
+  void clearItems() {
+    if (_list == null || _list?.items == null) return;
+    _list!.items!.clear();
+    _list!.cntItems = 0;
+    _list!.cntBoughtItems = 0;
+    notifyListeners();
+  }
+
+  void addItems(List<ListItemModel> items, {bool shouldClear = false}) {
     if (_list == null) return;
 
     if (_list!.items == null) {
       _list!.items = [];
     }
 
+    if (shouldClear) {
+      this.clearItems();
+    }
+
     _list!.items!.addAll(items);
     _list!.cntItems += items.length;
+    _list!.cntBoughtItems +=
+        items.where((element) => element.purchasedAt != null).length;
+    notifyListeners();
+  }
+
+  void updateItem(ListItemModel item) {
+    if (list?.items == null) return;
+
+    var itemIndex = list?.items?.indexWhere((e) => e.id == item.id);
+    if (itemIndex == null || itemIndex == -1) return;
+
+    list?.items?[itemIndex] = item;
     notifyListeners();
   }
 
@@ -32,6 +56,7 @@ class ListProvider extends ChangeNotifier {
     if (_list == null || _list?.items == null) return;
     _list?.items?.remove(item);
     _list!.cntItems -= 1;
+    if (item.purchasedAt != null) _list!.cntBoughtItems -= 1;
     notifyListeners();
   }
 
@@ -51,6 +76,16 @@ class ListProvider extends ChangeNotifier {
     if (_list == null || _list?.users == null) return;
     _list?.users?.remove(user);
     _list!.cntUsers -= 1;
+    notifyListeners();
+  }
+
+  void updateUser(UserModel user) {
+    if (list?.users == null) return;
+
+    var userIndex = list?.users?.indexOf(user);
+    if (userIndex == null) return;
+
+    list?.users?[userIndex] = user;
     notifyListeners();
   }
 }

@@ -42,7 +42,7 @@ class ListItemApi {
     throw ListItemNotFoundException();
   }
 
-  static Future<void> saveListItem({
+  static Future<ListItemModel> saveListItem({
     required String listID,
     String? itemID,
     required String name,
@@ -56,9 +56,10 @@ class ListItemApi {
       "is_repeating": isRepeating ? "1" : "0",
     };
 
-    var response;
     String url = "/list/item/$listID";
     if (itemID != null) url += "/$itemID";
+
+    Response response;
 
     if (image != null) {
       response = await callAPIFileUpload(
@@ -88,6 +89,12 @@ class ListItemApi {
         throw UnauthroziedException();
       case 404:
         throw RouteNotFoundException();
+
+      case 200:
+      case 201:
+      default:
+        var res = jsonDecode(response.body);
+        return ListItemModel.fromMap(res["data"]);
     }
   }
 }
