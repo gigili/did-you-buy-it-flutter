@@ -83,7 +83,7 @@ class ListModel {
   Color getFontColor() {
     Color fontColor = this.getListColor().computeLuminance() > 0.5
         ? Colors.black
-        : Colors.white;
+        : (Colors.lightGreen[100] ?? Colors.white);
 
     return fontColor;
   }
