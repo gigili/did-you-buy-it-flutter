@@ -29,7 +29,8 @@ class _ListItemTileState extends State<ListItemTile> {
       builder: (BuildContext context, watch, Widget? child) {
         ListModel? list = watch(listProvider).list;
         return ListTile(
-          onLongPress: () {
+          onLongPress: () {},
+          onTap: () {
             Navigator.of(context)
                 .pushNamed(ListItemForm.route_name, arguments: {
               "listID": list!.id,

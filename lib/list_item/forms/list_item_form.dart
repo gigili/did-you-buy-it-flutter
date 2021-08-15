@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:did_you_buy_it/.env.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/provider/list_provider.dart';
+import 'package:did_you_buy_it/list/provider/lists_provider.dart';
 import 'package:did_you_buy_it/list_item/api/list_item_api.dart';
 import 'package:did_you_buy_it/list_item/components/add_edit_item_image_button.dart';
 import 'package:did_you_buy_it/list_item/models/list_item_model.dart';
@@ -184,7 +185,14 @@ class _ListItemFormState extends State<ListItemForm> {
         title: "Item saved",
         message: "Item saved successfully",
         callBack: () {
-          context.read(listProvider).updateItem(newItem);
+          if (item != null) {
+            context.read(listProvider).updateItem(newItem);
+          } else {
+            context.read(listProvider).addItems([newItem]);
+          }
+
+          var list = context.read(listProvider).list!;
+          context.read(listsProvider).updateList(list);
           Navigator.of(context).pop();
         },
       );
