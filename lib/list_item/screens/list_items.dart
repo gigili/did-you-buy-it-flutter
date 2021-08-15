@@ -52,7 +52,7 @@ class _ListItemsState extends State<ListItems> {
           return Column(
             children: [
               ListItemHeader(),
-              SizedBox(height: paddingMedium),
+              SizedBox(height: 5),
               Expanded(
                 child: ListView.builder(
                   itemCount: (list?.cntItems ?? 0),
