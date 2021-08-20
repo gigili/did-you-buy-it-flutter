@@ -87,4 +87,15 @@ class ListModel {
 
     return fontColor;
   }
+
+  Color getSlidableActionColor() {
+    Color listColor = this.getListColor();
+    Color actionColor = listColor.withAlpha(170);
+
+    return actionColor;
+  }
+
+  bool isOwner(String? sessionUserID) {
+    return ((this.owner?.id ?? this.userID) == sessionUserID);
+  }
 }

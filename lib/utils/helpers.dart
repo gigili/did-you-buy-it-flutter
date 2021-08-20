@@ -63,18 +63,6 @@ void showConfirmationDialog(
         actions: <Widget>[
           new ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: positiveButtonAccent ? Colors.red : Colors.white,
-            ),
-            child: new Text(positiveActionLabel),
-            onPressed: () {
-              Navigator.of(context).pop();
-              if (positiveCallback != null) {
-                positiveCallback();
-              }
-            },
-          ),
-          new ElevatedButton(
-            style: ElevatedButton.styleFrom(
               primary: negativeButtonAccent ? Colors.red : Colors.white,
             ),
             child: new Text(negativeActionLabel),
@@ -82,6 +70,18 @@ void showConfirmationDialog(
               Navigator.of(context).pop();
               if (negativeCallback != null) {
                 negativeCallback();
+              }
+            },
+          ),
+          new ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: positiveButtonAccent ? Colors.red : Colors.white,
+            ),
+            child: new Text(positiveActionLabel),
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (positiveCallback != null) {
+                positiveCallback();
               }
             },
           ),

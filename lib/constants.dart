@@ -25,6 +25,12 @@ TextStyle accentElementStyle = TextStyle(
   fontSize: 16,
 );
 
+TextStyle itemPurchasedStyle = accentElementStyle.copyWith(
+  decorationThickness: 3,
+  decorationStyle: TextDecorationStyle.solid,
+  decoration: TextDecoration.lineThrough,
+);
+
 BoxDecoration underlineBoxDecoration = BoxDecoration(
   border: Border(
     bottom: BorderSide(color: Colors.blue, style: BorderStyle.solid, width: 4),

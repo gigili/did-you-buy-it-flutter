@@ -97,4 +97,59 @@ class ListItemApi {
         return ListItemModel.fromMap(res["data"]);
     }
   }
+
+  static Future<void> deleteListItem({
+    required ListItemModel item,
+    required String token,
+  }) async {
+    Response response = await callAPI(
+      "/list/item/${item.listID}/${item.id}",
+      headers: {"Authorization": "Bearer $token"},
+      requestMethod: RequestMethod.DELETE,
+    );
+
+    switch (response.statusCode) {
+      case 400:
+        var field = jsonDecode(response.body)["error"]["field"];
+        throw FailedInputValidationException(field);
+      case 401:
+        throw InvalidTokenException();
+      case 403:
+        throw UnauthroziedException();
+      case 404:
+        throw ListItemNotFoundException();
+      case 200:
+        break;
+      default:
+        throw Exception();
+    }
+  }
+
+  static Future<ListItemModel> updateListItemBoughtState({
+    required ListItemModel item,
+    required String token,
+  }) async {
+    Response response = await callAPI(
+      "/list/item/${item.listID}/${item.id}/bought",
+      headers: {"Authorization": "Bearer $token"},
+      requestMethod: RequestMethod.PATCH,
+    );
+    print(response.body);
+    switch (response.statusCode) {
+      case 400:
+        var field = jsonDecode(response.body)["error"]["field"];
+        throw FailedInputValidationException(field);
+      case 401:
+        throw InvalidTokenException();
+      case 403:
+        throw UnauthroziedException();
+      case 404:
+        throw ListItemNotFoundException();
+      case 200:
+        var data = jsonDecode(response.body)["data"];
+        return ListItemModel.fromMap(data);
+      default:
+        throw Exception();
+    }
+  }
 }

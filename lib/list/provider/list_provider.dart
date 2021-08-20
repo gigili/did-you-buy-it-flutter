@@ -48,6 +48,13 @@ class ListProvider extends ChangeNotifier {
     var itemIndex = list?.items?.indexWhere((e) => e.id == item.id);
     if (itemIndex == null || itemIndex == -1) return;
 
+    var prevState = list?.items?[itemIndex];
+
+    if (prevState?.purchasedAt != null && item.purchasedAt == null)
+      list?.cntBoughtItems -= 1;
+    else if (prevState?.purchasedAt == null && item.purchasedAt != null)
+      list?.cntBoughtItems += 1;
+
     list?.items?[itemIndex] = item;
     notifyListeners();
   }
@@ -55,7 +62,7 @@ class ListProvider extends ChangeNotifier {
   void deleteItem(ListItemModel item) {
     if (_list == null || _list?.items == null) return;
     _list?.items?.remove(item);
-    _list!.cntItems -= 1;
+    _list?.cntItems -= 1;
     if (item.purchasedAt != null) _list!.cntBoughtItems -= 1;
     notifyListeners();
   }

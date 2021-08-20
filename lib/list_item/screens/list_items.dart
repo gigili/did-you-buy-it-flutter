@@ -55,7 +55,7 @@ class _ListItemsState extends State<ListItems> {
               SizedBox(height: 5),
               Expanded(
                 child: ListView.builder(
-                  itemCount: (list?.cntItems ?? 0),
+                  itemCount: (list?.items?.length ?? 0),
                   itemBuilder: (context, index) {
                     list = list;
                     if (list?.items == null || list!.items!.isEmpty) {

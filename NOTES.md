@@ -1,15 +1,20 @@
 # Notes
 
+## 20.08.2021
+    * [ ] List items
+        * [ ] Ability to remove list item image
+    * [ ] Batter handeling of when to show slidable list item actions based on permissions 
+
 ## 13.08.2021
 
-    * [ ] List items
+    * [x] List items
         * [x] Add new list item
         * [x] Edit list item
         * [x] Add item image
             * [x] During adding new item
             * [x] When editing the item
-        * [ ] Delete item
-        * [ ] Mark as bought
+        * [x] Delete item
+        * [x] Mark as bought
     * [x] Password reset screen fix API call and response
     
 ## 11.08.2021
