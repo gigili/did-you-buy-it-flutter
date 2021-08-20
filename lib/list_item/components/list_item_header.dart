@@ -1,18 +1,16 @@
 import 'package:did_you_buy_it/constants.dart';
+import 'package:did_you_buy_it/list/components/list_info.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
-import 'package:did_you_buy_it/list/components/list_info_labels.dart';
+import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ListItemHeader extends StatelessWidget {
-  const ListItemHeader({
-    Key? key,
-    required this.list,
-  }) : super(key: key);
-
-  final ListModel list;
+class ListItemHeader extends ConsumerWidget {
+  const ListItemHeader({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, watch) {
+    ListModel list = watch(listProvider).list!;
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -32,7 +30,7 @@ class ListItemHeader extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20),
-          ListInfoLabels(list: list),
+          ListInfo(list: list),
         ],
       ),
     );

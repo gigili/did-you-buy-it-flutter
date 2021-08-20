@@ -8,8 +8,6 @@ Future<http.Response> callAPI(
   String url, {
   Map<String, dynamic>? params,
   Map<String, String>? headers,
-  Function(String data)? callback,
-  Function(int statusCode, String data)? errorCallback,
   RequestMethod requestMethod = RequestMethod.GET,
   XFile? file,
 }) async {
@@ -36,7 +34,7 @@ Future<http.Response> callAPI(
   }
 }
 
-Future<http.StreamedResponse> callAPIFileUpload(
+Future<http.Response> callAPIFileUpload(
   String url, {
   Map<String, String>? params,
   Map<String, String>? headers,
@@ -44,12 +42,28 @@ Future<http.StreamedResponse> callAPIFileUpload(
   required XFile file,
 }) async {
   Uri _url = Uri.parse('$BASE_URL$url');
-  var rqMethod = requestMethod == RequestMethod.POST ? "POST" : "PATCH";
+  String rqMethod;
+  switch (requestMethod) {
+    case RequestMethod.PUT:
+      rqMethod = "PUT";
+      break;
+    case RequestMethod.PATCH:
+      rqMethod = "PATCH";
+      break;
+    case RequestMethod.GET:
+    case RequestMethod.DELETE:
+    case RequestMethod.POST:
+    default:
+      rqMethod = "POST";
+      break;
+  }
+
   var request = new http.MultipartRequest(rqMethod, _url);
 
   if (params != null) request.fields.addAll(params);
   if (headers != null) request.headers.addAll(headers);
 
   request.files.add(await http.MultipartFile.fromPath(file.name, file.path));
-  return await request.send();
+  http.StreamedResponse response = await request.send();
+  return await http.Response.fromStream(response);
 }

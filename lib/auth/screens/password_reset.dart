@@ -1,15 +1,13 @@
-import 'dart:convert';
-
+import 'package:did_you_buy_it/auth/api/auth_api.dart';
 import 'package:did_you_buy_it/auth/forms/password_reset_form.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/ui/widgets/rounded_button_widget.dart';
 import 'package:did_you_buy_it/utils/helpers.dart';
-import 'package:did_you_buy_it/utils/network_utility.dart';
-import 'package:did_you_buy_it/utils/types.dart';
 import 'package:flutter/material.dart';
 
 class ResetPassword extends StatefulWidget {
   static String routeName = "/reset-password";
+
   @override
   _ResetPasswordState createState() => _ResetPasswordState();
 }
@@ -26,7 +24,7 @@ class _ResetPasswordState extends State<ResetPassword> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("DYBI? - Reset password"),
+        title: Text(APP_NAME),
       ),
       body: !apiCallInProgress
           ? Form(
@@ -86,88 +84,75 @@ class _ResetPasswordState extends State<ResetPassword> {
     );
   }
 
-  void requestPasswordReset() {
-    setState(() {
-      apiCallInProgress = true;
-    });
+  void requestPasswordReset() async {
+    try {
+      setState(() {
+        apiCallInProgress = true;
+      });
 
-    callAPI("/request_reset_password_link",
-        params: {"emailOrUsername": this.emailOrUsername},
-        callback: (String result) {
-      var response = jsonDecode(result);
-      if (response["success"]) {
+      var result = await AuthApi.requestPasswordReset(emailOrUsername);
+      if (result) {
         showMsgDialog(
           context,
           title: "Success",
           message: "We sent an email with code to reset your password.",
         );
 
-        setState(() {
-          showPasswordResetForm = true;
-        });
+        showPasswordResetForm = true;
       } else {
         showMsgDialog(
           context,
           title: "Error",
           message: "Unable to send password reset link.",
         );
-
-        setState(() {
-          showPasswordResetForm = false;
-        });
-      }
-      setState(() {
-        apiCallInProgress = false;
-      });
-    }, errorCallback: (int responseCode, String data) {
-      setState(() {
-        apiCallInProgress = false;
         showPasswordResetForm = false;
-      });
-
-      var result = jsonDecode(data);
+      }
+    } catch (_) {
       showMsgDialog(
         context,
-        title: "Password reset failed",
-        message: result["error"]["message"],
-        closeButtonText: "OK",
+        title: "Error",
+        message: "Unable to send password reset link.",
       );
-    }, requestMethod: RequestMethod.POST);
+
+      showPasswordResetForm = false;
+    } finally {
+      setState(() {
+        apiCallInProgress = false;
+      });
+    }
   }
 
-  void resetPassword() {
-    setState(() {
-      apiCallInProgress = true;
-    });
-
-    callAPI("/reset_password/$passwordResetCode",
-        params: {"password": hashStr(newPassword)}, callback: (String data) {
-      var result = jsonDecode(data);
-
-      if (result["success"]) {
-        showMsgDialog(context,
-            title: "Password changed",
-            message: "Password reset succesfully\nYou can login now.");
-
-        setState(() {
-          showPasswordResetForm = false;
-        });
-      }
-
+  void resetPassword() async {
+    try {
       setState(() {
-        apiCallInProgress = false;
+        apiCallInProgress = true;
       });
-    }, errorCallback: (int responseCode, String data) {
-      setState(() {
-        apiCallInProgress = false;
-      });
-      var result = jsonDecode(data);
+
+      await AuthApi.resetPassword(
+        passwordResetCode: passwordResetCode,
+        newPassword: newPassword,
+      );
+
+      showMsgDialog(
+        context,
+        title: "Password changed",
+        message: "Password reset successfully\nYou can login now.",
+        callBack: () {
+          Navigator.of(context).pop();
+        },
+      );
+      showPasswordResetForm = false;
+    } catch (_) {
       showMsgDialog(
         context,
         title: "Password reset failed",
-        message: result["error"]["message"],
+        message: "Failed to reset password.",
         closeButtonText: "OK",
       );
-    }, requestMethod: RequestMethod.POST);
+    } finally {
+      setState(() {
+        apiCallInProgress = false;
+      });
+    }
   }
 }

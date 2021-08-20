@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:did_you_buy_it/auth/exceptions/duplicate_registration_exception.dart';
+import 'package:did_you_buy_it/auth/exceptions/email_not_sent_exception.dart';
 import 'package:did_you_buy_it/auth/exceptions/invalid_credentials_exception.dart';
 import 'package:did_you_buy_it/auth/exceptions/login_failed_exception.dart';
 import 'package:did_you_buy_it/auth/exceptions/registration_failed_exception.dart';
+import 'package:did_you_buy_it/auth/exceptions/user_account_not_found_exception.dart';
 import 'package:did_you_buy_it/auth/models/token_model.dart';
 import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/utils/exceptions/failed_input_validation_exception.dart';
@@ -80,6 +82,44 @@ class AuthApi {
     }
 
     if (statusCode != 201) throw RegistrationFailedException();
+  }
+
+  static Future<bool> requestPasswordReset(String emailOrUsername) async {
+    Response response = await callAPI(
+      "/request_reset_password_link",
+      params: {"emailOrUsername": emailOrUsername},
+      requestMethod: RequestMethod.POST,
+    );
+
+    switch (response.statusCode) {
+      case 400:
+        var field = jsonDecode(response.body)["error"]["field"];
+        throw FailedInputValidationException(field);
+      case 404:
+        throw UserAccountNotFoundException();
+      case 500:
+        throw EmailNotSentException();
+    }
+
+    var res = jsonDecode(response.body);
+    return res["success"];
+  }
+
+  static Future<void> resetPassword({
+    required String passwordResetCode,
+    required String newPassword,
+  }) async {
+    Response response = await callAPI(
+      "/reset_password/$passwordResetCode",
+      params: {"password": hashStr(newPassword)},
+      requestMethod: RequestMethod.POST,
+    );
+
+    switch (response.statusCode) {
+      case 400:
+        var field = jsonDecode(response.body)["error"]["field"];
+        throw FailedInputValidationException(field);
+    }
   }
 }
 

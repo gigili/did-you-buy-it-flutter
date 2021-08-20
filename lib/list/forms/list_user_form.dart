@@ -1,7 +1,7 @@
 import 'package:did_you_buy_it/auth/models/user_model.dart';
 import 'package:did_you_buy_it/constants.dart';
 import 'package:did_you_buy_it/list/api/list_user_api.dart';
-import 'package:did_you_buy_it/list/components/list_user_tile.dart';
+import 'package:did_you_buy_it/list/components/user/list_user_tile.dart';
 import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:did_you_buy_it/list/provider/lists_provider.dart';
 import 'package:did_you_buy_it/ui/widgets/type_ahead_field_no_data.dart';
@@ -62,11 +62,9 @@ class _ListUserFormState extends State<ListUserForm> {
             return Text(user);
           }
 
-          var users = context.read(listProvider).list?.users;
-          var owner = users?.firstWhere((element) => element.owner == 1);
           return Padding(
             padding: const EdgeInsets.all(paddingSmall),
-            child: ListUserTile(user: user, owner: owner),
+            child: ListUserTile(user: user),
           );
         },
         onSuggestionSelected: (dynamic suggestion) {
@@ -98,7 +96,7 @@ class _ListUserFormState extends State<ListUserForm> {
       );
 
       list.users?.add(newUser);
-      list.countUsers += 1;
+      list.cntUsers += 1;
 
       context.read(listProvider).setList(list);
       context.read(listsProvider).updateList(list);

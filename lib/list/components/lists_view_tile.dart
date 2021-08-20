@@ -1,5 +1,5 @@
 import 'package:did_you_buy_it/constants.dart';
-import 'package:did_you_buy_it/list/components/list_info_labels.dart';
+import 'package:did_you_buy_it/list/components/list_info.dart';
 import 'package:did_you_buy_it/list/models/list_model.dart';
 import 'package:did_you_buy_it/list/provider/list_provider.dart';
 import 'package:did_you_buy_it/list/screens/list_editing_screen.dart';
@@ -101,7 +101,7 @@ class _ListsViewTileState extends State<ListsViewTile> {
             ],
           ),
           SizedBox(height: 20),
-          ListInfoLabels(list: this.widget.item),
+          ListInfo(list: this.widget.item),
         ],
       ),
     );
